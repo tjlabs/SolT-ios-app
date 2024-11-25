@@ -18,10 +18,10 @@ class JupiterButtonView: UIView {
     let BUTTON_COLOR: String = "#06244B"
     let buttonTextLabels = [
         "LIVE",
-        "CART",
+        "PROFILE",
         "MAP",
-        "MART",
-        "PROFILE"
+        "CART",
+        "MART"
     ]
     
     private let blackView: UIView = {
@@ -170,10 +170,10 @@ class JupiterButtonView: UIView {
         // Map button images to corresponding keys
         let buttonImages = [
             "icon_ad_white",       // Image for Button 1
-            "icon_cart_white", // Image for Button 4
+            "icon_profile_white", // Image for Button 4
             "icon_map_white",        // Image for Button 3
-            "icon_mart_white",       // Image for Button 5
-            "icon_profile_white"         // Image for Button 2
+            "icon_cart_white",       // Image for Button 5
+            "icon_mart_white"         // Image for Button 2
         ]
         
         // Create a dictionary to store button positions
@@ -236,10 +236,25 @@ class JupiterButtonView: UIView {
         })
     }
     
+//    @objc private func innerButtonTapped(_ sender: UIButton) {
+//        let label = buttonLabels[sender.tag].text ?? ""
+//        delegate?.jupiterButtonView(self, didSelectButtonWithLabel: label)
+//    }
+    
     @objc private func innerButtonTapped(_ sender: UIButton) {
         let label = buttonLabels[sender.tag].text ?? ""
-        delegate?.jupiterButtonView(self, didSelectButtonWithLabel: label)
+
+        UIView.animate(withDuration: 0.1, animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.1, animations: {
+                sender.transform = CGAffineTransform.identity
+            }, completion: { _ in
+                self.delegate?.jupiterButtonView(self, didSelectButtonWithLabel: label)
+            })
+        })
     }
+
 
     private func createButton() -> UIButton {
         let button = UIButton(type: .custom)
@@ -254,7 +269,7 @@ class JupiterButtonView: UIView {
         let label = UILabel()
         label.text = text
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.font = UIFont.pretendardSemiBold(size: 14)
         label.textAlignment = .center
         label.sizeToFit()
         return label

@@ -1,29 +1,47 @@
-//
-//  ProfileViewController.swift
-//  SolT
-//
-//  Created by 신동현 on 11/25/24.
-//
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProfileViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    static let identifier = "ProfileViewController"
+    
+    private lazy var topView = TopView(title: titleText)
+    var titleText: String = "Default Title"
+    private let disposeBag = DisposeBag()
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(false)
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupLayout()
+        bindActions()
     }
-    */
+    
+    private func bindActions() {
+        topView.backButtonTapped
+            .subscribe(onNext: { [weak self] in
+                self?.tapBackButton()
+            }).disposed(by: disposeBag)
+    }
+        
+    private func tapBackButton() {
+        self.navigationController?.popViewController(animated: true)
+    }
 
+}
+
+private extension ProfileViewController {
+    func setupLayout() {
+        view.addSubview(topView)
+        
+        topView.snp.makeConstraints { make in
+            make.height.equalTo(60)
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.top.equalToSuperview().inset(50)
+        }
+    }
 }

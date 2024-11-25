@@ -197,26 +197,36 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
     }
     
     private func moveToViewController(forLabel label: String) {
-        let destinationVC: UIViewController
-
+        var destinationVC: UIViewController
         switch label {
         case "LIVE":
             print("Live Inner Button tapped")
-                destinationVC = LiveViewController() // Example view controller
+            guard let vc = self.storyboard?.instantiateViewController(withIdentifier: LiveViewController.identifier) as? LiveViewController else { return }
+            vc.titleText = label
+            destinationVC = vc
+            //            self.navigationController?.pushViewController(vc, animated: true)
         case "CART":
             print("Cart Inner Button tapped")
-                destinationVC = CartViewController() // Example view controller
+            guard let vc = self.storyboard?.instantiateViewController(withIdentifier: CartViewController.identifier) as? CartViewController else { return }
+            vc.titleText = label
+            destinationVC = vc
         case "MAP":
             print("Map Inner Button tapped")
-                destinationVC = MapViewController() // Example view controller
+            guard let vc = self.storyboard?.instantiateViewController(withIdentifier: MapViewController.identifier) as? MapViewController else { return }
+            vc.titleText = label
+            destinationVC = vc
         case "MART":
             print("Mart Inner Button tapped")
-                destinationVC = MartViewController() // Example view controller
+            guard let vc = self.storyboard?.instantiateViewController(withIdentifier: MartViewController.identifier) as? MartViewController else { return }
+            vc.titleText = label
+            destinationVC = vc
         case "PROFILE":
             print("Profile Inner Button tapped")
-                destinationVC = ProfileViewController() // Example view controller
+            guard let vc = self.storyboard?.instantiateViewController(withIdentifier: ProfileViewController.identifier) as? ProfileViewController else { return }
+            vc.titleText = label
+            destinationVC = vc
         default:
-                return
+            return
         }
 
         if let jupiterButtonView = view.subviews.first(where: { $0 is JupiterButtonView }) as? JupiterButtonView {
@@ -231,13 +241,34 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
         }
     }
     
+//    private func pushViewControllerSmoothly(_ viewController: UIViewController) {
+//        guard let navigationController = navigationController else { return }
+//
+//        UIView.transition(with: navigationController.view, duration: 0.1, options: .transitionCrossDissolve, animations: {
+//            navigationController.pushViewController(viewController, animated: false)
+//        }, completion: nil)
+//    }
+    
     private func pushViewControllerSmoothly(_ viewController: UIViewController) {
         guard let navigationController = navigationController else { return }
 
-        UIView.transition(with: navigationController.view, duration: 0.1, options: .transitionCrossDissolve, animations: {
-            navigationController.pushViewController(viewController, animated: false)
-        }, completion: nil)
+        // Take a snapshot of the current view to serve as a temporary background
+        let snapshot = navigationController.view.snapshotView(afterScreenUpdates: false)
+        if let snapshot = snapshot {
+            navigationController.view.addSubview(snapshot)
+        }
+
+        // Perform the transition
+        navigationController.pushViewController(viewController, animated: false)
+
+        // Animate the snapshot removal to create a seamless effect
+        UIView.animate(withDuration: 0.1, animations: {
+            snapshot?.alpha = 0
+        }, completion: { _ in
+            snapshot?.removeFromSuperview()
+        })
     }
+
     
     private func bindViewModel() {
         // Bind Sector Data
