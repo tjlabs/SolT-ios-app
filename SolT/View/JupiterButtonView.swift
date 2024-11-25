@@ -9,6 +9,8 @@ import Then
 
 class JupiterButtonView: UIView {
     let ANIMATION_DURATION = 0.3
+    let BUTTON_COLOR: String = "#06244B"
+    
     private let blackView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
@@ -29,6 +31,7 @@ class JupiterButtonView: UIView {
         return imageView
     }()
     
+    private var circleDiameter: CGFloat = 0
     private let buttonSpacing: CGFloat = 25
     private let buttonSize: CGFloat = 60
     private var innerButtons: [UIButton] = []
@@ -60,6 +63,7 @@ class JupiterButtonView: UIView {
         circleView.translatesAutoresizingMaskIntoConstraints = false
 
         let diameter = UIScreen.main.bounds.width - 40
+        self.circleDiameter = diameter
 
         NSLayoutConstraint.activate([
             circleView.widthAnchor.constraint(equalToConstant: diameter),
@@ -114,7 +118,8 @@ class JupiterButtonView: UIView {
         UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: {
             self.circleView.transform = CGAffineTransform.identity
         }, completion: { _ in
-            self.addInnerButtons()
+//            self.addInnerButtons()
+            self.addInnerButtonsWithAnimation()
         })
     }
     
@@ -134,7 +139,7 @@ class JupiterButtonView: UIView {
         // Add Buttons 1, 2, and 3
         for (_, (x, y)) in buttonPositions.enumerated() {
             let button = UIButton(type: .custom)
-            button.backgroundColor = UIColor(hex: "#06244B")
+            button.backgroundColor = UIColor(hex: BUTTON_COLOR)
             button.layer.cornerRadius = buttonSize / 2
             button.translatesAutoresizingMaskIntoConstraints = false
 
@@ -160,7 +165,7 @@ class JupiterButtonView: UIView {
         // Add Buttons 4 and 5
         for (x, y) in arcPositions {
             let button = UIButton(type: .custom)
-            button.backgroundColor = UIColor(hex: "#06244B")
+            button.backgroundColor = UIColor(hex: BUTTON_COLOR)
             button.layer.cornerRadius = buttonSize / 2
             button.translatesAutoresizingMaskIntoConstraints = false
 
@@ -174,5 +179,61 @@ class JupiterButtonView: UIView {
                 button.centerYAnchor.constraint(equalTo: jupiterImageView.centerYAnchor, constant: y)
             ])
         }
+    }
+    
+    private func addInnerButtonsWithAnimation() {
+//        let diameter = circleView.frame.width
+        let diameter = self.circleDiameter
+        let radius = diameter / 2 - buttonSpacing
+
+        innerButtons.forEach { $0.removeFromSuperview() }
+        innerButtons.removeAll()
+
+        let buttonPositions: [(CGFloat, CGFloat)] = [
+            (-radius + buttonSize / 2, 0), // Button 1: Left, horizontally aligned
+            (radius - buttonSize / 2, 0),  // Button 2: Right, horizontally aligned
+            (0, -radius + buttonSize / 2)  // Button 3: Top, vertically aligned
+        ]
+
+        // Add Buttons 1, 2, and 3
+        for (_, (x, y)) in buttonPositions.enumerated() {
+            let button = createButton()
+            circleView.addSubview(button)
+            innerButtons.append(button)
+
+            button.center = jupiterImageView.center
+            UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: {
+                button.center = CGPoint(x: self.jupiterImageView.center.x + x, y: self.jupiterImageView.center.y + y)
+            })
+        }
+
+        let angleBetweenButtons = CGFloat.pi / 4
+        let arcRadius = radius - (buttonSize / 2)
+
+        let arcPositions: [(CGFloat, CGFloat)] = [
+            (-arcRadius * cos(angleBetweenButtons), -arcRadius * sin(angleBetweenButtons)),
+            (arcRadius * cos(angleBetweenButtons), -arcRadius * sin(angleBetweenButtons))
+        ]
+
+        // Add Buttons 4 and 5
+        for (x, y) in arcPositions {
+            let button = createButton()
+            circleView.addSubview(button)
+            innerButtons.append(button)
+
+            button.center = jupiterImageView.center
+            UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: {
+                button.center = CGPoint(x: self.jupiterImageView.center.x + x, y: self.jupiterImageView.center.y + y)
+            })
+        }
+    }
+
+    // Helper function to create a button
+    private func createButton() -> UIButton {
+        let button = UIButton(type: .custom)
+        button.backgroundColor = UIColor(hex: BUTTON_COLOR)
+        button.layer.cornerRadius = buttonSize / 2
+        button.frame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
+        return button
     }
 }
