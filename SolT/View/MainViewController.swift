@@ -1,16 +1,27 @@
 import UIKit
 import WebKit
 import Lottie
+import RxSwift
+import RxCocoa
 
 class MainViewController: UIViewController, WKUIDelegate {
+    private var isDebugMode: Bool = true
+    
     @IBOutlet weak var webView: WKWebView!
     private var bottomButtons: [UIButton] = []
     
-    let url = URL(string: "https://www.solumesl.com/en/solution/newtonpro?gad_source=1&gbraid=0AAAAACNvyjn4ta_VP-8mIIjTYbxU4aTgJ&gclid=Cj0KCQiA0fu5BhDQARIsAMXUBOIW6-wfzxDclixpW1J_KmA60NpSzJ-TJwOJej75BWfBGGTQOOKy2vIaAk50EALw_wcB")!
+    private let disposeBag = DisposeBag()
+    private let viewModel = WarpViewModel()
+    let sector_id: Int = 2
+    
+    let SOLUM_WEBPAGE = URL(string: "https://www.solumesl.com/en/solution/newtonpro?gad_source=1&gbraid=0AAAAACNvyjn4ta_VP-8mIIjTYbxU4aTgJ&gclid=Cj0KCQiA0fu5BhDQARIsAMXUBOIW6-wfzxDclixpW1J_KmA60NpSzJ-TJwOJej75BWfBGGTQOOKy2vIaAk50EALw_wcB")!
     let bottomTapViewHeight: CGFloat = 70
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: true)
+        bindViewModel()
+        fetchSectorData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -37,44 +48,46 @@ class MainViewController: UIViewController, WKUIDelegate {
     }
     
     private func loadWebView() {
-        let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 60 * 60 * 24)
+        let request = URLRequest(url: SOLUM_WEBPAGE, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 60 * 60 * 24)
         webView.load(request)
     }
     
     private func setBottomTapBar() {
-        let bottomSafeArea = view.safeAreaInsets.bottom
-        let bottomTapViewY = view.bounds.height - bottomTapViewHeight - bottomSafeArea
-        let bottomTapView = UIView(frame: CGRect(x: 0, y: bottomTapViewY, width: view.bounds.width, height: bottomTapViewHeight))
-        bottomTapView.backgroundColor = .systemGray6
-        bottomTapView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-        view.addSubview(bottomTapView)
+        if isDebugMode {
+            let bottomSafeArea = view.safeAreaInsets.bottom
+            let bottomTapViewY = view.bounds.height - bottomTapViewHeight - bottomSafeArea
+            let bottomTapView = UIView(frame: CGRect(x: 0, y: bottomTapViewY, width: view.bounds.width, height: bottomTapViewHeight))
+            bottomTapView.backgroundColor = .systemGray6
+            bottomTapView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+            view.addSubview(bottomTapView)
 
-        let buttonWidth: CGFloat = bottomTapView.frame.width / 5
-        let buttonHeight: CGFloat = bottomTapView.frame.height
+            let buttonWidth: CGFloat = bottomTapView.frame.width / 5
+            let buttonHeight: CGFloat = bottomTapView.frame.height
 
-        let icons = ["icon_bottom_home", "icon_bottom_search", "icon_bottom_jupiter", "icon_bottom_bell", "icon_bottom_logout"]
-        for (index, iconName) in icons.enumerated() {
-            let button = UIButton(frame: CGRect(x: buttonWidth * CGFloat(index), y: -5, width: buttonWidth, height: buttonHeight))
+            let icons = ["icon_bottom_home", "icon_bottom_search", "icon_bottom_jupiter", "icon_bottom_bell", "icon_bottom_logout"]
+            for (index, iconName) in icons.enumerated() {
+                let button = UIButton(frame: CGRect(x: buttonWidth * CGFloat(index), y: -5, width: buttonWidth, height: buttonHeight))
 
-            if !iconName.isEmpty, let icon = UIImage(named: iconName) {
-                var imgScale = 2.5
-                if iconName == "icon_bottom_logout" {
-                    imgScale = 1.2
+                if !iconName.isEmpty, let icon = UIImage(named: iconName) {
+                    var imgScale = 2.5
+                    if iconName == "icon_bottom_logout" {
+                        imgScale = 1.2
+                    }
+                    let scaledIcon = icon.withRenderingMode(.alwaysOriginal).resize(to: CGSize(width: icon.size.width / imgScale, height: icon.size.height / imgScale))
+                    button.setImage(scaledIcon, for: .normal)
+                    button.imageView?.contentMode = .center
                 }
-                let scaledIcon = icon.withRenderingMode(.alwaysOriginal).resize(to: CGSize(width: icon.size.width / imgScale, height: icon.size.height / imgScale))
-                button.setImage(scaledIcon, for: .normal)
-                button.imageView?.contentMode = .center
-            }
 
-            button.tag = index
-            button.accessibilityIdentifier = iconName
-            button.addTarget(self, action: #selector(tapButtonTapped(_:)), for: .touchUpInside)
-            bottomTapView.addSubview(button)
-            bottomButtons.append(button)
-        }
-        
-        setScanningMovingImg { success, message in
-            print(message)
+                button.tag = index
+                button.accessibilityIdentifier = iconName
+                button.addTarget(self, action: #selector(tapButtonTapped(_:)), for: .touchUpInside)
+                bottomTapView.addSubview(button)
+                bottomButtons.append(button)
+            }
+            
+            setScanningMovingImg { success, message in
+                print(message)
+            }
         }
     }
 
@@ -136,6 +149,53 @@ class MainViewController: UIViewController, WKUIDelegate {
         view.addSubview(jupiterButtonView)
     }
     
+    private func bindViewModel() {
+        // Bind Sector Data
+        viewModel.sectorData
+            .subscribe(onNext: { [self] sectorData in
+                if let outputSector = sectorData {
+                    fetchContentData(outputSector: outputSector)
+                }
+            })
+            .disposed(by: disposeBag)
+
+        // Bind Content Data
+        viewModel.contentData
+            .subscribe(onNext: { [self] contentData in
+                if let outputContent = contentData {
+//                    fetchAdvertisementData(outputContent: outputContent)
+                }
+            })
+            .disposed(by: disposeBag)
+
+//        viewModel.advertisementData
+//            .subscribe(onNext: { adData in
+//                print("Advertisement data received: \(String(describing: adData))")
+//            })
+//            .disposed(by: disposeBag)
+    }
+
+    private func fetchSectorData() {
+        let inputSector = InputSector(sector_id: self.sector_id, operating_system: "iOS")
+        viewModel.fetchSectorData(input: inputSector)
+    }
+    
+    private func fetchContentData(outputSector: OutputSector) {
+        for item in outputSector.content_rf_list {
+            let inputContent = InputContent(ward_id: item.ward_id)
+            viewModel.fetchContentData(input: inputContent)
+        }
+    }
+    
+//    private func fetchAdvertisementData(outputContent: OutputContent) {
+//        for item in outputContent.content_list {
+//            if item.type == 1 {
+//                let inputAdvertisement = InputAdvertisement(content_id: item.id)
+//                viewModel.fetchAdvertisementData(input: inputAdvertisement)
+//            }
+//        }
+//    }
+    
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         return nil
     }
@@ -143,7 +203,6 @@ class MainViewController: UIViewController, WKUIDelegate {
 
 extension MainViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("WebView is Loaded!!!!")
         setBottomTapBar()
     }
 }

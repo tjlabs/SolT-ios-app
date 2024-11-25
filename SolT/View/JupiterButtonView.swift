@@ -114,7 +114,9 @@ class JupiterButtonView: UIView {
 
     
     private func performCircleAnimation() {
+        // Ensure `circleView` layout is finalized before animation
         self.layoutIfNeeded()
+        
         let diameter = circleDiameter
         let radius = diameter / 2 - buttonSpacing
         
@@ -132,30 +134,64 @@ class JupiterButtonView: UIView {
             (arcRadius * cos(angleBetweenButtons), -arcRadius * sin(angleBetweenButtons))  // Button 5
         ]
         
-        let allButtonPositions = buttonPositions + arcPositions
+        // Combine and reorder button positions as 1, 4, 3, 5, 2
+        let allButtonPositions = [
+            buttonPositions[0], // Button 1
+            arcPositions[0],    // Button 4
+            buttonPositions[2], // Button 3
+            arcPositions[1],    // Button 5
+            buttonPositions[1]  // Button 2
+        ]
         
+        // Map button images to corresponding keys
+        let buttonImages = [
+            "icon_live",       // Image for Button 1
+            "icon_bottom_logout", // Image for Button 4
+            "icon_map",        // Image for Button 3
+            "icon_cart",       // Image for Button 5
+            "icon_iot"         // Image for Button 2
+        ]
+        
+        // Create a dictionary to store button positions
+        var buttonPositionDictionary: [String: CGPoint] = [:]
+
         // Create buttons at the center of the circleView
         innerButtons.forEach { $0.removeFromSuperview() }
-        innerButtons = allButtonPositions.map { _ in
+        innerButtons = allButtonPositions.enumerated().map { index, position in
             let button = createButton()
+            
+            // Set the button image
+            if index < buttonImages.count, let image = UIImage(named: buttonImages[index]) {
+                let scaledImage = image.resize(to: CGSize(width: buttonSize * 0.7, height: buttonSize * 0.7))
+                button.setImage(scaledImage, for: .normal)
+            }
+            
             button.center = jupiterImageView.center // Initial position
             button.alpha = 0 // Initially hidden
             circleView.addSubview(button)
+            
+            // Save the button's final position in the dictionary
+            let buttonName = "\(index + 1)"
+            let finalPosition = CGPoint(x: jupiterImageView.center.x + position.0,
+                                        y: jupiterImageView.center.y + position.1)
+            buttonPositionDictionary[buttonName] = finalPosition
+
             return button
         }
-        
+
         // Animate circleView and buttons together
         circleView.transform = CGAffineTransform(scaleX: 0, y: 0)
         UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: {
             // Expand the circleView
             self.circleView.transform = CGAffineTransform.identity
-            
+
             // Move buttons to their target positions
-            for (button, targetOffset) in zip(self.innerButtons, allButtonPositions) {
-                button.center = CGPoint(x: self.jupiterImageView.center.x + targetOffset.0,
-                                         y: self.jupiterImageView.center.y + targetOffset.1)
+            for (button, position) in zip(self.innerButtons, allButtonPositions) {
+                button.center = CGPoint(x: self.jupiterImageView.center.x + position.0,
+                                         y: self.jupiterImageView.center.y + position.1)
                 button.alpha = 1 // Make buttons fully visible
             }
+        }, completion: { _ in
         })
     }
 
@@ -165,6 +201,8 @@ class JupiterButtonView: UIView {
         button.backgroundColor = UIColor(hex: BUTTON_COLOR)
         button.layer.cornerRadius = buttonSize / 2
         button.frame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
+        button.imageView?.contentMode = .scaleAspectFit
         return button
     }
+
 }
