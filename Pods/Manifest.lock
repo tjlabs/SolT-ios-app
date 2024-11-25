@@ -1,5 +1,6 @@
 PODS:
   - lottie-ios (4.5.0)
+  - OlympusSDK (0.2.0)
   - RxCocoa (6.5.0):
     - RxRelay (= 6.5.0)
     - RxSwift (= 6.5.0)
@@ -11,6 +12,7 @@ PODS:
 
 DEPENDENCIES:
   - lottie-ios
+  - OlympusSDK (= 0.2.0)
   - RxCocoa (~> 6.5.0)
   - RxSwift (~> 6.5.0)
   - SnapKit
@@ -19,6 +21,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - lottie-ios
+    - OlympusSDK
     - RxCocoa
     - RxRelay
     - RxSwift
@@ -27,12 +30,13 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
+  OlympusSDK: ca119972f929aa896798e6114c73eca3337f9ca5
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
   RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 48b104f4f6bda3416a910c1de2d152e92e9d2683
+PODFILE CHECKSUM: e7854f4d0abbf66ad6627dd73f76e2607a468c36
 
 COCOAPODS: 1.16.2

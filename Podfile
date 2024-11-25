@@ -10,6 +10,7 @@ target 'SolT' do
   pod 'RxSwift', '~> 6.5.0'
   pod 'RxCocoa', '~> 6.5.0'
   pod 'lottie-ios'
+  pod 'OlympusSDK', '0.2.0'
 
   target 'SolTTests' do
     inherit! :search_paths

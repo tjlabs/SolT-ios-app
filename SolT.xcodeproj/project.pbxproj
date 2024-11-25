@@ -164,6 +164,7 @@
 				B32E7E272CEF1B940092C2A2 /* Frameworks */,
 				B32E7E282CEF1B940092C2A2 /* Resources */,
 				77E6D58AE5C219A0A4299247 /* [CP] Embed Pods Frameworks */,
+				DE1C8EEEA538B5362D05D7BC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -208,6 +209,7 @@
 				B32E7E472CEF1B990092C2A2 /* Frameworks */,
 				B32E7E482CEF1B990092C2A2 /* Resources */,
 				6B5F666CC40CA32AA1B7B371 /* [CP] Embed Pods Frameworks */,
+				9A7C2ACCD6809BF7D54AA12F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -367,6 +369,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9A7C2ACCD6809BF7D54AA12F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DE1C8EEEA538B5362D05D7BC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT/Pods-SolT-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT/Pods-SolT-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolT/Pods-SolT-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FCD31D13EA0371C9C8126569 /* [CP] Check Pods Manifest.lock */ = {

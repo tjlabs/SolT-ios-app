@@ -3,6 +3,7 @@ import WebKit
 import Lottie
 import RxSwift
 import RxCocoa
+import OlympusSDK
 
 class MainViewController: UIViewController, WKUIDelegate {
     private var isDebugMode: Bool = true
@@ -12,6 +13,10 @@ class MainViewController: UIViewController, WKUIDelegate {
     
     private let disposeBag = DisposeBag()
     private let viewModel = WarpViewModel()
+    
+    private lazy var bleManager = BLEManager()
+    var bleTimer: DispatchSourceTimer?
+    
     let sector_id: Int = 2
     
     let SOLUM_WEBPAGE = URL(string: "https://www.solumesl.com/en/solution/newtonpro?gad_source=1&gbraid=0AAAAACNvyjn4ta_VP-8mIIjTYbxU4aTgJ&gclid=Cj0KCQiA0fu5BhDQARIsAMXUBOIW6-wfzxDclixpW1J_KmA60NpSzJ-TJwOJej75BWfBGGTQOOKy2vIaAk50EALw_wcB")!
@@ -33,6 +38,8 @@ class MainViewController: UIViewController, WKUIDelegate {
         setupWebView()
         loadWebView()
         setBottomTapBar()
+        bleManager.startScan(option: .Foreground)
+        startTimer()
     }
     
     private func setupWebView() {
@@ -198,6 +205,29 @@ class MainViewController: UIViewController, WKUIDelegate {
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         return nil
+    }
+    
+    func startTimer() {
+        if (self.bleTimer == nil) {
+            let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".bleTimer")
+            self.bleTimer = DispatchSource.makeTimerSource(queue: queueRFD)
+            self.bleTimer!.schedule(deadline: .now(), repeating: 0.5)
+            self.bleTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.bleTimerUpdate()
+            }
+            self.bleTimer!.resume()
+        }
+    }
+    
+    func stopTimer() {
+        self.bleTimer?.cancel()
+        self.bleTimer = nil
+    }
+    
+    @objc func bleTimerUpdate() {
+        let stronggestBLE = bleManager.getStronggestBLE()
+        //print(stronggestBLE)
     }
 }
 
