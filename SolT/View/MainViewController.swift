@@ -5,7 +5,7 @@ import RxSwift
 import RxCocoa
 import OlympusSDK
 
-class MainViewController: UIViewController, WKUIDelegate {
+class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDelegate {
     private var isDebugMode: Bool = true
     
     @IBOutlet weak var webView: WKWebView!
@@ -61,6 +61,41 @@ class MainViewController: UIViewController, WKUIDelegate {
     
     private func setBottomTapBar() {
         if isDebugMode {
+            let bottomSafeArea = view.safeAreaInsets.bottom
+            let bottomTapViewY = view.bounds.height - bottomTapViewHeight - bottomSafeArea
+            let bottomTapView = UIView(frame: CGRect(x: 0, y: bottomTapViewY, width: view.bounds.width, height: bottomTapViewHeight))
+            bottomTapView.backgroundColor = .systemGray6
+            bottomTapView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+            view.addSubview(bottomTapView)
+
+            let buttonWidth: CGFloat = bottomTapView.frame.width / 5
+            let buttonHeight: CGFloat = bottomTapView.frame.height
+
+            let icons = ["icon_bottom_home", "icon_bottom_search", "icon_bottom_jupiter", "icon_bottom_bell", "icon_bottom_logout"]
+            for (index, iconName) in icons.enumerated() {
+                let button = UIButton(frame: CGRect(x: buttonWidth * CGFloat(index), y: -5, width: buttonWidth, height: buttonHeight))
+
+                if !iconName.isEmpty, let icon = UIImage(named: iconName) {
+                    var imgScale = 2.5
+                    if iconName == "icon_bottom_logout" {
+                        imgScale = 1.2
+                    }
+                    let scaledIcon = icon.withRenderingMode(.alwaysOriginal).resize(to: CGSize(width: icon.size.width / imgScale, height: icon.size.height / imgScale))
+                    button.setImage(scaledIcon, for: .normal)
+                    button.imageView?.contentMode = .center
+                }
+
+                button.tag = index
+                button.accessibilityIdentifier = iconName
+                button.addTarget(self, action: #selector(tapButtonTapped(_:)), for: .touchUpInside)
+                bottomTapView.addSubview(button)
+                bottomButtons.append(button)
+            }
+            
+            setScanningMovingImg { success, message in
+                print(message)
+            }
+        } else {
             let bottomSafeArea = view.safeAreaInsets.bottom
             let bottomTapViewY = view.bounds.height - bottomTapViewHeight - bottomSafeArea
             let bottomTapView = UIView(frame: CGRect(x: 0, y: bottomTapViewY, width: view.bounds.width, height: bottomTapViewHeight))
@@ -153,7 +188,55 @@ class MainViewController: UIViewController, WKUIDelegate {
     
     private func showJupiterButtonView() {
         let jupiterButtonView = JupiterButtonView(frame: view.bounds)
+        jupiterButtonView.delegate = self
         view.addSubview(jupiterButtonView)
+    }
+    
+    func jupiterButtonView(_ jupiterButtonView: JupiterButtonView, didSelectButtonWithLabel label: String) {
+        moveToViewController(forLabel: label)
+    }
+    
+    private func moveToViewController(forLabel label: String) {
+        let destinationVC: UIViewController
+
+        switch label {
+        case "LIVE":
+            print("Live Inner Button tapped")
+                destinationVC = LiveViewController() // Example view controller
+        case "CART":
+            print("Cart Inner Button tapped")
+                destinationVC = CartViewController() // Example view controller
+        case "MAP":
+            print("Map Inner Button tapped")
+                destinationVC = MapViewController() // Example view controller
+        case "MART":
+            print("Mart Inner Button tapped")
+                destinationVC = MartViewController() // Example view controller
+        case "PROFILE":
+            print("Profile Inner Button tapped")
+                destinationVC = ProfileViewController() // Example view controller
+        default:
+                return
+        }
+
+        if let jupiterButtonView = view.subviews.first(where: { $0 is JupiterButtonView }) as? JupiterButtonView {
+            UIView.animate(withDuration: 0.1, animations: {
+                jupiterButtonView.alpha = 0
+            }, completion: { _ in
+                jupiterButtonView.removeFromSuperview()
+                self.pushViewControllerSmoothly(destinationVC)
+            })
+        } else {
+            pushViewControllerSmoothly(destinationVC)
+        }
+    }
+    
+    private func pushViewControllerSmoothly(_ viewController: UIViewController) {
+        guard let navigationController = navigationController else { return }
+
+        UIView.transition(with: navigationController.view, duration: 0.1, options: .transitionCrossDissolve, animations: {
+            navigationController.pushViewController(viewController, animated: false)
+        }, completion: nil)
     }
     
     private func bindViewModel() {

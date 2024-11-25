@@ -7,9 +7,22 @@ import RxCocoa
 import SnapKit
 import Then
 
+protocol JupiterButtonViewDelegate: AnyObject {
+    func jupiterButtonView(_ jupiterButtonView: JupiterButtonView, didSelectButtonWithLabel label: String)
+}
+
 class JupiterButtonView: UIView {
+    weak var delegate: JupiterButtonViewDelegate?
+    
     let ANIMATION_DURATION = 0.2
     let BUTTON_COLOR: String = "#06244B"
+    let buttonTextLabels = [
+        "LIVE",
+        "CART",
+        "MAP",
+        "MART",
+        "PROFILE"
+    ]
     
     private let blackView: UIView = {
         let view = UIView()
@@ -34,8 +47,10 @@ class JupiterButtonView: UIView {
     private var circleDiameter: CGFloat = 0
     private let buttonSpacing: CGFloat = 25
     private let buttonSize: CGFloat = 60
+    private let buttonLabelOffset: CGFloat = 10
     private var innerButtons: [UIButton] = []
-
+    private var buttonLabels: [UILabel] = []
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -89,6 +104,15 @@ class JupiterButtonView: UIView {
             let scaleSize = 2.0
             let scaledImage = image.resize(to: CGSize(width: image.size.width * scaleSize, height: image.size.height * scaleSize))
             jupiterImageView.image = scaledImage
+        }
+    }
+    
+    // Method to set up buttons
+    private func setupButtons() {
+        // Creating buttons and assigning actions
+        for (index, button) in innerButtons.enumerated() {
+            button.tag = index
+            button.addTarget(self, action: #selector(innerButtonTapped(_:)), for: .touchUpInside)
         }
     }
 
@@ -145,30 +169,42 @@ class JupiterButtonView: UIView {
         
         // Map button images to corresponding keys
         let buttonImages = [
-            "icon_live",       // Image for Button 1
-            "icon_bottom_logout", // Image for Button 4
-            "icon_map",        // Image for Button 3
-            "icon_cart",       // Image for Button 5
-            "icon_iot"         // Image for Button 2
+            "icon_ad_white",       // Image for Button 1
+            "icon_cart_white", // Image for Button 4
+            "icon_map_white",        // Image for Button 3
+            "icon_mart_white",       // Image for Button 5
+            "icon_profile_white"         // Image for Button 2
         ]
         
         // Create a dictionary to store button positions
         var buttonPositionDictionary: [String: CGPoint] = [:]
 
         // Create buttons at the center of the circleView
+//        innerButtons.forEach { $0.removeFromSuperview() }
         innerButtons.forEach { $0.removeFromSuperview() }
+        buttonLabels.forEach { $0.removeFromSuperview() }
+        innerButtons.removeAll()
+        buttonLabels.removeAll()
+        
         innerButtons = allButtonPositions.enumerated().map { index, position in
             let button = createButton()
             
             // Set the button image
             if index < buttonImages.count, let image = UIImage(named: buttonImages[index]) {
-                let scaledImage = image.resize(to: CGSize(width: buttonSize * 0.7, height: buttonSize * 0.7))
+                let scaledImage = image.resize(to: CGSize(width: buttonSize * 0.6, height: buttonSize * 0.6))
                 button.setImage(scaledImage, for: .normal)
             }
             
             button.center = jupiterImageView.center // Initial position
             button.alpha = 0 // Initially hidden
             circleView.addSubview(button)
+            
+            // Create and configure label
+            let label = createLabel(withText: buttonTextLabels[index])
+            label.center = CGPoint(x: button.center.x, y: button.center.y + buttonSize / 2 + buttonLabelOffset)
+            label.alpha = 0 // Initially hidden
+            circleView.addSubview(label)
+            buttonLabels.append(label)
             
             // Save the button's final position in the dictionary
             let buttonName = "\(index + 1)"
@@ -181,21 +217,30 @@ class JupiterButtonView: UIView {
 
         // Animate circleView and buttons together
         circleView.transform = CGAffineTransform(scaleX: 0, y: 0)
-        UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: { [self] in
             // Expand the circleView
             self.circleView.transform = CGAffineTransform.identity
 
             // Move buttons to their target positions
-            for (button, position) in zip(self.innerButtons, allButtonPositions) {
+            for (index, position) in allButtonPositions.enumerated() {
+                let button = self.innerButtons[index]
+                let label = self.buttonLabels[index]
                 button.center = CGPoint(x: self.jupiterImageView.center.x + position.0,
-                                         y: self.jupiterImageView.center.y + position.1)
-                button.alpha = 1 // Make buttons fully visible
+                                        y: self.jupiterImageView.center.y + position.1)
+                label.center = CGPoint(x: button.center.x, y: button.center.y + self.buttonSize / 2 + buttonLabelOffset)
+                button.alpha = 1
+                label.alpha = 1
             }
-        }, completion: { _ in
+        }, completion: { [self] _ in
+            setupButtons()
         })
     }
+    
+    @objc private func innerButtonTapped(_ sender: UIButton) {
+        let label = buttonLabels[sender.tag].text ?? ""
+        delegate?.jupiterButtonView(self, didSelectButtonWithLabel: label)
+    }
 
-    // Helper function to create a button
     private func createButton() -> UIButton {
         let button = UIButton(type: .custom)
         button.backgroundColor = UIColor(hex: BUTTON_COLOR)
@@ -204,5 +249,14 @@ class JupiterButtonView: UIView {
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }
-
+    
+    private func createLabel(withText text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .black
+        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.textAlignment = .center
+        label.sizeToFit()
+        return label
+    }
 }
