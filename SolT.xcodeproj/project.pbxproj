@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B32E7E652CEF1CF10092C2A2 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B32E7E642CEF1CF10092C2A2 /* WebKit.framework */; };
+		BD91F32563034CFD0E681265 /* Pods_SolT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEDDF78EF8667D08C4887E3E /* Pods_SolT.framework */; };
+		C5D5C21A389A6C886AC7D3DA /* Pods_SolT_SolTUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F170A61F9AD580CD6F1359F5 /* Pods_SolT_SolTUITests.framework */; };
+		C8D2F27E15A4E1FA81B3AB9A /* Pods_SolTTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A746E17B6F7CDBBDE68F99 /* Pods_SolTTests.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B32E7E412CEF1B980092C2A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,9 +31,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		16281C904B30777DC0508BD9 /* Pods-SolT.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolT.release.xcconfig"; path = "Target Support Files/Pods-SolT/Pods-SolT.release.xcconfig"; sourceTree = "<group>"; };
+		26A746E17B6F7CDBBDE68F99 /* Pods_SolTTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolTTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		529E719E8355F639306724F9 /* Pods-SolT-SolTUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolT-SolTUITests.debug.xcconfig"; path = "Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		76B1EB1881A9DAE6F5C4A8AB /* Pods-SolT.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolT.debug.xcconfig"; path = "Target Support Files/Pods-SolT/Pods-SolT.debug.xcconfig"; sourceTree = "<group>"; };
 		B32E7E2A2CEF1B940092C2A2 /* SolT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B32E7E402CEF1B980092C2A2 /* SolTTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolTTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B32E7E4A2CEF1B990092C2A2 /* SolTUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolTUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B32E7E642CEF1CF10092C2A2 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		DEC0F16264FF8940AAC48788 /* Pods-SolT-SolTUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolT-SolTUITests.release.xcconfig"; path = "Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests.release.xcconfig"; sourceTree = "<group>"; };
+		DEDDF78EF8667D08C4887E3E /* Pods_SolT.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolT.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3ACAD3FD4A340EFB66024AF /* Pods-SolTTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolTTests.debug.xcconfig"; path = "Target Support Files/Pods-SolTTests/Pods-SolTTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E778FD1963B612ED64E7C56C /* Pods-SolTTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolTTests.release.xcconfig"; path = "Target Support Files/Pods-SolTTests/Pods-SolTTests.release.xcconfig"; sourceTree = "<group>"; };
+		F170A61F9AD580CD6F1359F5 /* Pods_SolT_SolTUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SolT_SolTUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +82,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B32E7E652CEF1CF10092C2A2 /* WebKit.framework in Frameworks */,
+				BD91F32563034CFD0E681265 /* Pods_SolT.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8D2F27E15A4E1FA81B3AB9A /* Pods_SolTTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,19 +99,35 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5D5C21A389A6C886AC7D3DA /* Pods_SolT_SolTUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3CC2ED2F5278AFF9CE133D65 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				76B1EB1881A9DAE6F5C4A8AB /* Pods-SolT.debug.xcconfig */,
+				16281C904B30777DC0508BD9 /* Pods-SolT.release.xcconfig */,
+				529E719E8355F639306724F9 /* Pods-SolT-SolTUITests.debug.xcconfig */,
+				DEC0F16264FF8940AAC48788 /* Pods-SolT-SolTUITests.release.xcconfig */,
+				E3ACAD3FD4A340EFB66024AF /* Pods-SolTTests.debug.xcconfig */,
+				E778FD1963B612ED64E7C56C /* Pods-SolTTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		B32E7E212CEF1B940092C2A2 = {
 			isa = PBXGroup;
 			children = (
 				B32E7E2C2CEF1B940092C2A2 /* SolT */,
 				B32E7E432CEF1B990092C2A2 /* SolTTests */,
 				B32E7E4D2CEF1B990092C2A2 /* SolTUITests */,
+				B32E7E632CEF1CF10092C2A2 /* Frameworks */,
 				B32E7E2B2CEF1B940092C2A2 /* Products */,
+				3CC2ED2F5278AFF9CE133D65 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -105,6 +141,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B32E7E632CEF1CF10092C2A2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B32E7E642CEF1CF10092C2A2 /* WebKit.framework */,
+				DEDDF78EF8667D08C4887E3E /* Pods_SolT.framework */,
+				F170A61F9AD580CD6F1359F5 /* Pods_SolT_SolTUITests.framework */,
+				26A746E17B6F7CDBBDE68F99 /* Pods_SolTTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -112,9 +159,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B32E7E532CEF1B990092C2A2 /* Build configuration list for PBXNativeTarget "SolT" */;
 			buildPhases = (
+				3C926EA6DF191C3C4774C30D /* [CP] Check Pods Manifest.lock */,
 				B32E7E262CEF1B940092C2A2 /* Sources */,
 				B32E7E272CEF1B940092C2A2 /* Frameworks */,
 				B32E7E282CEF1B940092C2A2 /* Resources */,
+				77E6D58AE5C219A0A4299247 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -124,8 +173,6 @@
 				B32E7E2C2CEF1B940092C2A2 /* SolT */,
 			);
 			name = SolT;
-			packageProductDependencies = (
-			);
 			productName = SolT;
 			productReference = B32E7E2A2CEF1B940092C2A2 /* SolT.app */;
 			productType = "com.apple.product-type.application";
@@ -134,6 +181,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B32E7E582CEF1B990092C2A2 /* Build configuration list for PBXNativeTarget "SolTTests" */;
 			buildPhases = (
+				FCD31D13EA0371C9C8126569 /* [CP] Check Pods Manifest.lock */,
 				B32E7E3C2CEF1B980092C2A2 /* Sources */,
 				B32E7E3D2CEF1B980092C2A2 /* Frameworks */,
 				B32E7E3E2CEF1B980092C2A2 /* Resources */,
@@ -147,8 +195,6 @@
 				B32E7E432CEF1B990092C2A2 /* SolTTests */,
 			);
 			name = SolTTests;
-			packageProductDependencies = (
-			);
 			productName = SolTTests;
 			productReference = B32E7E402CEF1B980092C2A2 /* SolTTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -157,9 +203,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B32E7E5B2CEF1B990092C2A2 /* Build configuration list for PBXNativeTarget "SolTUITests" */;
 			buildPhases = (
+				934837C9B70239733E11405C /* [CP] Check Pods Manifest.lock */,
 				B32E7E462CEF1B990092C2A2 /* Sources */,
 				B32E7E472CEF1B990092C2A2 /* Frameworks */,
 				B32E7E482CEF1B990092C2A2 /* Resources */,
+				6B5F666CC40CA32AA1B7B371 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -170,8 +218,6 @@
 				B32E7E4D2CEF1B990092C2A2 /* SolTUITests */,
 			);
 			name = SolTUITests;
-			packageProductDependencies = (
-			);
 			productName = SolTUITests;
 			productReference = B32E7E4A2CEF1B990092C2A2 /* SolTUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -244,6 +290,109 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3C926EA6DF191C3C4774C30D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SolT-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6B5F666CC40CA32AA1B7B371 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolT-SolTUITests/Pods-SolT-SolTUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		77E6D58AE5C219A0A4299247 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT/Pods-SolT-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolT/Pods-SolT-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolT/Pods-SolT-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		934837C9B70239733E11405C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SolT-SolTUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FCD31D13EA0371C9C8126569 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SolTTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		B32E7E262CEF1B940092C2A2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -284,12 +433,14 @@
 /* Begin XCBuildConfiguration section */
 		B32E7E542CEF1B990092C2A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 76B1EB1881A9DAE6F5C4A8AB /* Pods-SolT.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G75UAV755N;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SolT/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -297,6 +448,8 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -304,20 +457,26 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.SolT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		B32E7E552CEF1B990092C2A2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 16281C904B30777DC0508BD9 /* Pods-SolT.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G75UAV755N;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SolT/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -325,6 +484,8 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -332,9 +493,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.SolT;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -390,7 +555,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -447,7 +612,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -459,6 +624,7 @@
 		};
 		B32E7E592CEF1B990092C2A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E3ACAD3FD4A340EFB66024AF /* Pods-SolTTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -478,6 +644,7 @@
 		};
 		B32E7E5A2CEF1B990092C2A2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E778FD1963B612ED64E7C56C /* Pods-SolTTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -497,6 +664,7 @@
 		};
 		B32E7E5C2CEF1B990092C2A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 529E719E8355F639306724F9 /* Pods-SolT-SolTUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -514,6 +682,7 @@
 		};
 		B32E7E5D2CEF1B990092C2A2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DEC0F16264FF8940AAC48788 /* Pods-SolT-SolTUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
