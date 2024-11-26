@@ -12,6 +12,7 @@ class ProfileView: UIView {
     private lazy var topView = TopView(title: titleText)
     private lazy var profileUserInfoView = ProfileUserInfoView()
     private lazy var profileBirthView = ProfileBirthView()
+    private lazy var profileAllergyView = ProfileAllergyView()
     private let disposeBag = DisposeBag()
     
     var titleText: String = "Default Title"
@@ -38,7 +39,6 @@ class ProfileView: UIView {
     
     private func setupLayout() {
         addSubview(backgroundView)
-        
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -60,6 +60,13 @@ class ProfileView: UIView {
         profileBirthView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalTo(profileUserInfoView.snp.bottom).offset(10)
+        }
+        
+        addSubview(profileAllergyView)
+        profileAllergyView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.top.equalTo(profileBirthView.snp.bottom).offset(10)
+            make.bottom.equalToSuperview()
         }
     }
     

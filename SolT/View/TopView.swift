@@ -60,8 +60,8 @@ class TopView: UIView {
         separatorView.snp.makeConstraints { make in
             make.bottom.equalToSuperview()
             make.height.equalTo(5)
-            make.leading.equalToSuperview().offset(-20)
-            make.trailing.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().offset(-10)
+            make.trailing.equalToSuperview().offset(10)
         }
     }
 }
