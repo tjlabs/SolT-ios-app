@@ -7,6 +7,7 @@ class WarpViewModel {
     let sectorData: BehaviorRelay<OutputSector?> = BehaviorRelay(value: nil)
     let contentData: BehaviorRelay<OutputContent?> = BehaviorRelay(value: nil)
     let advertisementData: BehaviorRelay<OutputAdvertisement?> = BehaviorRelay(value: nil)
+    let productData: BehaviorRelay<OutputProduct?> = BehaviorRelay(value: nil)
     
     var sectorWarpDict = [String: Double]()
     
@@ -71,6 +72,25 @@ class WarpViewModel {
             } else {
                 print("Failed to fetch advertisement data: \(result)")
                 self.advertisementData.accept(nil)
+            }
+        }
+    }
+    
+    func fetchProductData(input: Int) {
+        NetworkManager.shared.getProducts(url: PRODUCT_URL, input: input) { [weak self] statusCode, result in
+            guard let self = self else { return }
+
+            if statusCode == 200, let data = result.data(using: .utf8) {
+                if let decodedResult = try? JSONDecoder().decode(OutputProduct.self, from: data) {
+                    print("Product Result : \(decodedResult)")
+                    self.productData.accept(decodedResult)
+                } else {
+                    print("Failed to fetch product data: \(result)")
+                    self.productData.accept(nil)
+                }
+            } else {
+                print("Failed to fetch product data: \(result)")
+                self.productData.accept(nil)
             }
         }
     }

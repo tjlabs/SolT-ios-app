@@ -31,7 +31,7 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
     var bleTimer: DispatchSourceTimer?
     
     // User Info
-    let sector_id: Int = 2
+    let sector_id: Int = 4
     let user_id: String = "solt_test"
     let region: String = "Korea"
     
@@ -43,6 +43,7 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         bindViewModel()
         fetchSectorData()
+        fetchProductData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -318,8 +319,16 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
                 self.removeCurrentSubview(martView)
             }
         }
+        viewModel.productData
+            .subscribe(onNext: { [weak martView] outputProduct in
+                guard let outputProduct = outputProduct else { return }
+                martView?.updateProducts(outputProduct)
+            })
+            .disposed(by: disposeBag)
+        
         moveToSubview(martView)
     }
+
     
     private func bindViewModel() {
         // Bind Sector Data
@@ -367,6 +376,10 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
 //            }
 //        }
 //    }
+    
+    private func fetchProductData() {
+        viewModel.fetchProductData(input: self.sector_id)
+    }
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         return nil

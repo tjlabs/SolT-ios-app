@@ -104,7 +104,7 @@ class ProfileBirthView: UIView {
     // MARK: - Helper Methods
     private func createLabel(with text: String) -> UILabel {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.font = UIFont.pretendardBold(size: 20)
         label.textAlignment = .left
         label.textColor = .black
         label.text = text
@@ -114,7 +114,7 @@ class ProfileBirthView: UIView {
     private func createStyledTextField(placeholder: String) -> UITextField {
         let textField = UITextField()
         textField.placeholder = placeholder
-        textField.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        textField.font = UIFont.pretendardBold(size: 18)
         textField.textAlignment = .left
         textField.textColor = .black
         textField.layer.borderWidth = VIEW_BORDER_WIDTH

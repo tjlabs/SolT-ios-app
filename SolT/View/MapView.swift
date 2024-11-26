@@ -12,7 +12,7 @@ class MapView: UIView {
     
     private lazy var mainView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = .blue
         return view
     }()
     
@@ -72,6 +72,6 @@ class MapView: UIView {
     private func setOlympusMapView(region: String, sector_id: Int) {
         mapView.configureFrame(to: mainView)
         mainView.addSubview(mapView)
-        OlympusMapManager.shared.loadMap(region: region, sector_id: sector_id, mapView: mapView)
+        OlympusMapManager.shared.loadMap(region: region, sector_id: 6, mapView: mapView)
     }
 }
