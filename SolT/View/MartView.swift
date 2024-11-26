@@ -46,7 +46,7 @@ class MartView: UIView {
         addSubview(topView)
         
         topView.snp.makeConstraints { make in
-            make.height.equalTo(60)
+            make.height.equalTo(100)
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(50)
         }

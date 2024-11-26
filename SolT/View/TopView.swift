@@ -25,6 +25,12 @@ class TopView: UIView {
         $0.textColor = .black
     }
     
+    private lazy var separatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray6
+        return view
+    }()
+    
     init(title: String) {
         super.init(frame: .zero)
         self.title = title
@@ -38,6 +44,7 @@ class TopView: UIView {
     private func setupLayout(title: String) {
         addSubview(backButton)
         addSubview(titleLabel)
+        addSubview(separatorView)
         backButton.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.width.equalTo(60)
@@ -49,7 +56,13 @@ class TopView: UIView {
             make.top.bottom.equalToSuperview()
             make.centerX.equalToSuperview()
         }
-
+        
+        separatorView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.height.equalTo(5)
+            make.leading.equalToSuperview().offset(-20)
+            make.trailing.equalToSuperview().offset(20)
+        }
     }
 }
 
