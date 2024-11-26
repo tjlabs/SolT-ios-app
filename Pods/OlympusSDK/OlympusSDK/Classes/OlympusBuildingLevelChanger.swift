@@ -1,3 +1,5 @@
+import Foundation
+
 public class OlympusBuildingLevelChanger {
     
     init() {
@@ -30,8 +32,8 @@ public class OlympusBuildingLevelChanger {
     public var buildingsAndLevels = [String:[String]]()
     public var preOutputMobileTime: Int = 0
     
-    public var sectorDRModeArea = [String: SectorDRModeArea]()
-    public var currentDRModeArea = SectorDRModeArea(number: -1, range: [], direction: 0, nodes: [])
+    public var sectorDRModeArea = [String: DRModeArea]()
+    public var currentDRModeArea = DRModeArea(number: -1, range: [], direction: 0, nodes: [])
     public var currentDRModeAreaNodeNumber: Int = -1
     
     var trajEditedObserver: Any!
@@ -46,8 +48,8 @@ public class OlympusBuildingLevelChanger {
         self.buildingsAndLevels = [String:[String]]()
         self.preOutputMobileTime = 0
         
-        self.sectorDRModeArea = [String: SectorDRModeArea]()
-        self.currentDRModeArea = SectorDRModeArea(number: -1, range: [], direction: 0, nodes: [])
+        self.sectorDRModeArea = [String: DRModeArea]()
+        self.currentDRModeArea = DRModeArea(number: -1, range: [], direction: 0, nodes: [])
         self.currentDRModeAreaNodeNumber = -1
     }
     
@@ -288,10 +290,10 @@ public class OlympusBuildingLevelChanger {
         return result
     }
     
-    public func setSectorDRModeArea(building: String, level: String, drModeAreaList: [SectorDRModeArea]) {
+    public func setSectorDRModeArea(building: String, level: String, drModeAreaList: [DRModeArea]) {
         for info in drModeAreaList {
             let key = "\(self.sector_id)_\(building)_\(level)_\(info.number)"
-            self.sectorDRModeArea[key] = SectorDRModeArea(number: info.number, range: info.range, direction: info.direction, nodes: info.nodes)
+            self.sectorDRModeArea[key] = DRModeArea(number: info.number, range: info.range, direction: info.direction, nodes: info.nodes)
 //            print(getLocalTimeString() + " , (Olympus) setSectorDRModeArea : key = \(key) , value = \(self.sectorDRModeArea[key])")
         }
     }
@@ -354,7 +356,7 @@ public class OlympusBuildingLevelChanger {
                isInArea = true
             } else {
 //                print(getLocalTimeString() + " , (Olympus) isInSectorLevelChange (Out) : Normal")
-                self.currentDRModeArea = SectorDRModeArea(number: -1, range: [], direction: 0, nodes: [])
+                self.currentDRModeArea = DRModeArea(number: -1, range: [], direction: 0, nodes: [])
                 self.currentDRModeAreaNodeNumber = -1
             }
         }
@@ -377,14 +379,18 @@ public class OlympusBuildingLevelChanger {
     }
     
     func notificationCenterAddObserver() {
-        self.trajEditedObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .trajEditedAfterOsr, object: nil)
+        self.trajEditedObserver = NotificationCenter.default.addObserver(forName: .trajEditedAfterOsr, object: nil, queue: .main) { [weak self] notification in
+            self?.onDidReceiveNotification(notification)
+        }
     }
-    
+
     func notificationCenterRemoveObserver() {
-        NotificationCenter.default.removeObserver(self.trajEditedObserver)
+        if let observer = self.trajEditedObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
-    
-    @objc func onDidReceiveNotification(_ notification: Notification) {
+
+    func onDidReceiveNotification(_ notification: Notification) {
         if notification.name == .trajEditedAfterOsr {
             self.isDetermineSpot = false
         }

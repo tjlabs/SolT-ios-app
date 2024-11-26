@@ -1,9 +1,11 @@
 import UIKit
+import Foundation
 
 public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate {
     
     enum MapMode {
         case MAP_ONLY
+        case MAP_INTERACTION
         case UPDATE_USER
     }
     
@@ -42,9 +44,12 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
     private var levelsLeadingToBuildingsConstraint: NSLayoutConstraint!
     
     private var mapScaleOffset = [String: [Double]]()
+    private var sectorScales = [String: [Double]]()
+    private var sectorUnits = [String: [Unit]]()
     private var currentScale: CGFloat = 1.0
     private var translationOffset: CGPoint = .zero
     private var isPpHidden = true
+    private var isUnitHidden = true
     
     private var preXyh = [Double]()
     private var userHeadingBuffer = [Double]()
@@ -54,14 +59,18 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
     private var mode: MapMode = .MAP_ONLY
     private var zoomMode: ZoomMode = .ZOOM_OUT
     
-    private var modeChangedTime = 0
-    private let USER_CENTER_OFFSET: CGFloat = 30 // 150
+    private var mapModeChangedTime = 0
+    private var zoomModeChangedTime = 0
+    private let TIME_FOR_REST: Int = 3*1000
+    private let USER_CENTER_OFFSET: CGFloat = 40 // 30 // 150
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setupAssets()
         setupView()
         observeImageUpdates()
+        observeScaleUpdates()
+        observeUnitUpdates()
         observePathPixelUpdates()
 //        addGestures()
     }
@@ -71,6 +80,8 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         setupAssets()
         setupView()
         observeImageUpdates()
+        observeScaleUpdates()
+        observeUnitUpdates()
         observePathPixelUpdates()
 //        addGestures()
     }
@@ -80,57 +91,57 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
     }
     
     private func addGestures() {
-        addPinchGesture()
-        addPanGesture()
+//        addPinchGesture()
+//        addPanGesture()
     }
     
-    private func addPinchGesture() {
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
-        self.addGestureRecognizer(pinchGesture)
-    }
-    
-    private func addPanGesture() {
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
-        self.addGestureRecognizer(panGesture)
-    }
-    
-    private func addTouchGesture() {
-        let touchGesture = UIPanGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
-        self.addGestureRecognizer(touchGesture)
-    }
-    
-    @objc private func handlePinchGesture(_ sender: UIPinchGestureRecognizer) {
-        if sender.state == .changed {
-            let scale = sender.scale
-            mapImageView.transform = mapImageView.transform.scaledBy(x: scale, y: scale)
-            currentScale = scale
-            sender.scale = 1.0
-            print(getLocalTimeString() + " , (Olympus) MapView : currentScale = \(currentScale)")
-        } else if sender.state == .ended {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                self?.updatePathPixel()
-            }
-        }
-    }
-    
-    @objc private func handlePanGesture(_ sender: UIPanGestureRecognizer) {
-        let translation = sender.translation(in: self)
-        if sender.state == .changed {
-            mapImageView.transform = mapImageView.transform.translatedBy(x: translation.x, y: translation.y)
-            translationOffset.x = translation.x
-            translationOffset.y = translation.y
-            sender.setTranslation(.zero, in: self)
-        } else if sender.state == .ended {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                self?.updatePathPixel()
-            }
-        }
-    }
-    
-    @objc private func handleTouchGesture(_ sender: UITapGestureRecognizer) {
-        let touchPoint = sender.location(in: self.mapImageView)
-        print(getLocalTimeString() + " , (Olympus) MapView : Touch \(touchPoint)")
-    }
+//    private func addPinchGesture() {
+//        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+//        self.addGestureRecognizer(pinchGesture)
+//    }
+//    
+//    private func addPanGesture() {
+//        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+//        self.addGestureRecognizer(panGesture)
+//    }
+//    
+//    private func addTouchGesture() {
+//        let touchGesture = UIPanGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
+//        self.addGestureRecognizer(touchGesture)
+//    }
+//    
+//    @objc private func handlePinchGesture(_ sender: UIPinchGestureRecognizer) {
+//        if sender.state == .changed {
+//            let scale = sender.scale
+//            mapImageView.transform = mapImageView.transform.scaledBy(x: scale, y: scale)
+//            currentScale = scale
+//            sender.scale = 1.0
+//            print(getLocalTimeString() + " , (Olympus) MapView : currentScale = \(currentScale)")
+//        } else if sender.state == .ended {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+//                self?.updatePathPixel()
+//            }
+//        }
+//    }
+//    
+//    @objc private func handlePanGesture(_ sender: UIPanGestureRecognizer) {
+//        let translation = sender.translation(in: self)
+//        if sender.state == .changed {
+//            mapImageView.transform = mapImageView.transform.translatedBy(x: translation.x, y: translation.y)
+//            translationOffset.x = translation.x
+//            translationOffset.y = translation.y
+//            sender.setTranslation(.zero, in: self)
+//        } else if sender.state == .ended {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+//                self?.updatePathPixel()
+//            }
+//        }
+//    }
+//    
+//    @objc private func handleTouchGesture(_ sender: UITapGestureRecognizer) {
+//        let touchPoint = sender.location(in: self.mapImageView)
+//        print(getLocalTimeString() + " , (Olympus) MapView : Touch \(touchPoint)")
+//    }
 
     private func setupView() {
         setupMapImageView()
@@ -146,6 +157,18 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         velocityLabel.textColor = .black
         velocityLabel.font = UIFont.boldSystemFont(ofSize: 50)
         velocityLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        let attrString = NSAttributedString(
+            string: "0",
+            attributes: [
+                NSAttributedString.Key.strokeColor: UIColor.white,
+                NSAttributedString.Key.foregroundColor: UIColor.black,
+                NSAttributedString.Key.strokeWidth: -3.0,
+                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 53.0)
+            ]
+        )
+        velocityLabel.attributedText = attrString
+        
         addSubview(velocityLabel)
         
         NSLayoutConstraint.activate([
@@ -190,32 +213,92 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         ])
     }
     
+//    private func setupButtonActions() {
+//        myLocationButton.addTarget(self, action: #selector(myLocationButtonTapped), for: .touchUpInside)
+//        myLocationButton.addTarget(self, action: #selector(myLocationButtonTappedOver), for: [.touchUpInside, .touchUpOutside])
+//        
+//        zoomButton.addTarget(self, action: #selector(zoomButtonTapped), for: .touchUpInside)
+//        zoomButton.addTarget(self, action: #selector(zoomButtonTappedOver), for: [.touchUpInside, .touchUpOutside])
+//    }
+    
     private func setupButtonActions() {
-        myLocationButton.addTarget(self, action: #selector(myLocationButtonTapped), for: .touchUpInside)
-        zoomButton.addTarget(self, action: #selector(zoomButtonTapped), for: .touchUpInside)
+        myLocationButton.addAction(UIAction { [weak self] _ in
+            self?.myLocationButtonTapped()
+        }, for: .touchUpInside)
+        
+        myLocationButton.addAction(UIAction { [weak self] _ in
+            self?.myLocationButtonTappedOver()
+        }, for: [.touchUpInside, .touchUpOutside])
+        
+        zoomButton.addAction(UIAction { [weak self] _ in
+            self?.zoomButtonTapped()
+        }, for: .touchUpInside)
+        
+        zoomButton.addAction(UIAction { [weak self] _ in
+            self?.zoomButtonTappedOver()
+        }, for: [.touchUpInside, .touchUpOutside])
+    }
+
+    
+    private func myLocationButtonTapped() {
+        self.zoomButton.isUserInteractionEnabled = false
+        self.myLocationButton.isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0.1) {
+            self.myLocationButton.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+        }
+        self.mode = .UPDATE_USER
+        forceToZoomInMode()
     }
     
-    @objc private func myLocationButtonTapped() {
-        forceToZoomInMode()
-//        toggleZoomMode(to: .ZOOM_OUT)
-//        perform(#selector(returnToZoomInMode), with: nil, afterDelay: 3.0)
+    private func myLocationButtonTappedOver() {
+        UIView.animate(withDuration: 0.1) {
+            self.myLocationButton.transform = CGAffineTransform.identity // Reset scale
+            self.zoomButton.isUserInteractionEnabled = true
+            self.myLocationButton.isUserInteractionEnabled = true
+        }
+    }
+    
+    private func forceToMapInteractionMode() {
+        DispatchQueue.main.async { [self] in
+            self.mode = .MAP_INTERACTION
+            self.mapModeChangedTime = getCurrentTimeInMilliseconds()
+            self.toggleZoomMode(to: .ZOOM_OUT)
+            
+            mapImageView.transform = .identity
+            if let existingPointView = mapImageView.viewWithTag(userCoordTag) {
+                existingPointView.removeFromSuperview()
+            }
+        }
     }
     
     private func forceToZoomInMode() {
         if zoomMode == .ZOOM_OUT {
             toggleZoomMode(to: .ZOOM_IN)
             if !preXyh.isEmpty {
-                plotUserCoordWithZoomAndRotation(xyh: preXyh, type: .FORCE)
+                plotUserCoordWithZoomAndRotation(building: selectedBuilding ?? "", level: selectedLevel ?? "",xyh: preXyh, type: .FORCE)
             }
         } else {
             if !preXyh.isEmpty {
-                plotUserCoordWithZoomAndRotation(xyh: preXyh, type: .FORCE)
+                plotUserCoordWithZoomAndRotation(building: selectedBuilding ?? "", level: selectedLevel ?? "",xyh: preXyh, type: .FORCE)
             }
         }
     }
         
-    @objc private func zoomButtonTapped() {
+    private func zoomButtonTapped() {
+        self.zoomButton.isUserInteractionEnabled = false
+        self.myLocationButton.isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0.1) {
+            self.zoomButton.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+        }
         toggleZoomMode()
+    }
+    
+    private func zoomButtonTappedOver() {
+        UIView.animate(withDuration: 0.1) {
+            self.zoomButton.transform = CGAffineTransform.identity
+            self.zoomButton.isUserInteractionEnabled = true
+            self.myLocationButton.isUserInteractionEnabled = true
+        }
     }
         
     private func toggleZoomMode(to mode: ZoomMode? = nil) {
@@ -227,20 +310,14 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         if zoomMode == .ZOOM_IN {
             // 현재 확대 모드
             if !preXyh.isEmpty {
-                plotUserCoordWithZoomAndRotation(xyh: preXyh, type: .FORCE)
+                plotUserCoordWithZoomAndRotation(building: selectedBuilding ?? "", level: selectedLevel ?? "", xyh: preXyh, type: .FORCE)
             }
         } else {
-            modeChangedTime = getCurrentTimeInMilliseconds()
+            zoomModeChangedTime = getCurrentTimeInMilliseconds()
             // 현재 전체 모드
-            if !preXyh.isEmpty {
-                plotUserCoord(xyh: preXyh)
+            if !preXyh.isEmpty && self.mode != .MAP_INTERACTION {
+                plotUserCoord(building: selectedBuilding ?? "", level: selectedLevel ?? "", xyh: preXyh)
             }
-        }
-    }
-        
-    @objc private func returnToZoomInMode() {
-        if zoomMode == .ZOOM_OUT {
-            toggleZoomMode(to: .ZOOM_IN)
         }
     }
     
@@ -373,21 +450,56 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
 
+//    public func updateBuildingData(_ buildings: [String], levelData: [String: [String]]) {
+//        self.buildingData = buildings
+//        if let firstBuilding = buildings.first {
+//            self.selectedBuilding = firstBuilding
+//            self.levelData = levelData[firstBuilding] ?? []
+//            self.selectedLevel = self.levelData.first
+//        }
+//        buildingsCollectionView.reloadData()
+//        levelsCollectionView.reloadData()
+//        adjustCollectionViewHeights()
+//        updateMapImageView()
+//        updatePathPixel()
+//        updateUnit()
+//        
+//        // MARK: - Control Building & Level CollectionView when building is 1
+//        if buildings.count < 2 {
+//            buildingsCollectionView.isHidden = true
+//            levelsLeadingToBuildingsConstraint.isActive = false
+//            levelsLeadingToSuperviewConstraint.isActive = true
+//        } else {
+//            buildingsCollectionView.isHidden = false
+//            levelsLeadingToSuperviewConstraint.isActive = false
+//            levelsLeadingToBuildingsConstraint.isActive = true
+//        }
+//
+//        UIView.animate(withDuration: 0.3) {
+//            self.layoutIfNeeded()
+//        }
+//    }
+    
     public func updateBuildingData(_ buildings: [String], levelData: [String: [String]]) {
         self.buildingData = buildings
         if let firstBuilding = buildings.first {
             self.selectedBuilding = firstBuilding
             self.levelData = levelData[firstBuilding] ?? []
             self.selectedLevel = self.levelData.first
+        } else {
+            self.selectedBuilding = nil
+            self.levelData = []
+            self.selectedLevel = nil
         }
+
         buildingsCollectionView.reloadData()
         levelsCollectionView.reloadData()
         adjustCollectionViewHeights()
         updateMapImageView()
         updatePathPixel()
-        
-        // MARK: - Control Building & Level CollectionView when building is 1
-        if buildings.count < 2 {
+        updateUnit()
+
+        if buildings.isEmpty {
             buildingsCollectionView.isHidden = true
             levelsLeadingToBuildingsConstraint.isActive = false
             levelsLeadingToSuperviewConstraint.isActive = true
@@ -401,13 +513,26 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
             self.layoutIfNeeded()
         }
     }
+
     
     private func adjustCollectionViewHeights() {
+//        let buildingHeight = calculateCollectionViewHeight(for: buildingData.count)
+//        let levelHeight = calculateCollectionViewHeight(for: levelData.count)
+//        
+//        buildingsCollectionViewHeightConstraint.constant = buildingHeight
+//        levelsCollectionViewHeightConstraint.constant = levelHeight
+//
+//        UIView.animate(withDuration: 0.3) {
+//            self.layoutIfNeeded()
+//        }
+        
         let buildingHeight = calculateCollectionViewHeight(for: buildingData.count)
         let levelHeight = calculateCollectionViewHeight(for: levelData.count)
-        
-        buildingsCollectionViewHeightConstraint.constant = buildingHeight
-        levelsCollectionViewHeightConstraint.constant = levelHeight
+            
+        print(getLocalTimeString() + " , (Olympus) MapView : Building Height= \(buildingHeight), Level Height= \(levelHeight)")
+            
+        buildingsCollectionViewHeightConstraint.constant = max(buildingHeight, 0)
+        levelsCollectionViewHeightConstraint.constant = max(levelHeight, 0)
 
         UIView.animate(withDuration: 0.3) {
             self.layoutIfNeeded()
@@ -427,29 +552,51 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
             mapImageView.image = nil
         }
     }
-    
+
     private func updatePathPixel() {
         guard let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel else { return }
         let pathPixelKey = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
         if let ppCoord = OlympusPathMatchingCalculator.shared.PpCoord[pathPixelKey] {
-            calMapScaleOffset(ppCoord: ppCoord)
+            calMapScaleOffset(building: selectedBuilding, level: selectedLevel, ppCoord: ppCoord)
             if !self.isPpHidden {
-                plotPathPixels(ppCoord: ppCoord)
+                plotPathPixels(building: selectedBuilding, level: selectedLevel, ppCoord: ppCoord)
             }
         }
     }
     
-    private func calMapScaleOffset(ppCoord: [[Double]]) {
+    private func updateUnit() {
+        guard let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel else { return }
+        let pathPixelKey = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
+        let unitKey = "unit_" + pathPixelKey
+        
+        if let ppCoord = OlympusPathMatchingCalculator.shared.PpCoord[pathPixelKey] {
+            guard let scaleOffsetValues = mapScaleOffset[pathPixelKey], scaleOffsetValues.count == 6 else {
+                print(getLocalTimeString() + " , (Olympus) MapView : Scale Empty in Unit")
+                calMapScaleOffset(building: selectedBuilding, level: selectedLevel, ppCoord: ppCoord)
+                return
+            }
+            if !self.isUnitHidden {
+                guard let units = self.sectorUnits[unitKey] else {
+                    print(getLocalTimeString() + " , (Olympus) MapView : Unit Empty \(unitKey)")
+                    DispatchQueue.main.async { [self] in
+                        mapImageView.subviews.forEach { $0.removeFromSuperview() }
+                    }
+                    return
+                }
+                plotUnit(building: selectedBuilding, level: selectedLevel, units: units, ppCoord: ppCoord)
+            }
+        }
+    }
+    
+    private func calMapScaleOffset(building: String, level: String, ppCoord: [[Double]]) {
         DispatchQueue.main.async { [self] in
             guard let image = mapImageView.image else { return }
             
-            let imageSize = image.size
-            let imageViewSize = mapImageView.bounds.size
+            let key = "\(OlympusMapManager.shared.sector_id)_\(building)_\(level)"
             let scaledSize = calculateAspectFitImageSize(for: image, in: mapImageView)
             
-            let xCoords = ppCoord[0]
-            let yCoords = ppCoord[1]
-            
+            let scaleKey = "scale_" + key
+            let sectorScale: [Double] = sectorScales[scaleKey] ?? []
 //            guard let minX = xCoords.min(),
 //                  let maxX = xCoords.max(),
 //                  let minY = yCoords.min(),
@@ -466,10 +613,11 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
 //            let minY: Double = -8
 //            let maxY: Double = 530
             
-            let minX: Double = -54.5
-            let maxX: Double = 277.8
-            let minY: Double = -8
-            let maxY: Double = 530
+//            print(getLocalTimeString() + " , (Olympus) MapView : calMapScaleOffset // key = \(scaleKey) // value = \(sectorScale)")
+            let minX: Double = !sectorScale.isEmpty ? sectorScale[0] : -54.5
+            let maxX: Double = !sectorScale.isEmpty ? sectorScale[1] : 277.8
+            let minY: Double = !sectorScale.isEmpty ? sectorScale[2] : -8
+            let maxY: Double = !sectorScale.isEmpty ? sectorScale[3] : 530
             
             let ppWidth: Double = maxX - minX
             let ppHeight: Double = maxY - minY
@@ -479,17 +627,19 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
 
             let offsetX = minX
             let offsetY = minY
-            
-            let key = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding ?? "")_\(selectedLevel ?? "")"
+           
             mapScaleOffset[key] = [scaleX, scaleY, offsetX, offsetY, scaledSize.width, scaledSize.height]
         }
     }
 
-    private func plotPathPixels(ppCoord: [[Double]]) {
+    private func plotPathPixels(building: String, level: String, ppCoord: [[Double]]) {
         DispatchQueue.main.async { [self] in
             mapImageView.subviews.forEach { $0.removeFromSuperview() }
-            let key = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding ?? "")_\(selectedLevel ?? "")"
-            guard let scaleOffsetValues = mapScaleOffset[key], scaleOffsetValues.count == 6 else { return }
+            let key = "\(OlympusMapManager.shared.sector_id)_\(building)_\(level)"
+            guard let scaleOffsetValues = mapScaleOffset[key], scaleOffsetValues.count == 6 else {
+                calMapScaleOffset(building: building, level: level, ppCoord: ppCoord)
+                return
+            }
             
             let scaleX = scaleOffsetValues[0]
             let scaleY = scaleOffsetValues[1]
@@ -519,14 +669,17 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         }
     }
 
-    private func plotUserCoord(xyh: [Double]) {
+    private func plotUserCoord(building: String, level: String, xyh: [Double]) {
         DispatchQueue.main.async { [self] in
             if preXyh == xyh {
                 return
             }
             
-            let key = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding ?? "")_\(selectedLevel ?? "")"
+            let key = "\(OlympusMapManager.shared.sector_id)_\(building)_\(level)"
             guard let scaleOffsetValues = mapScaleOffset[key], scaleOffsetValues.count == 6 else {
+                if let ppCoord = OlympusPathMatchingCalculator.shared.PpCoord[key] {
+                    calMapScaleOffset(building: building, level: level, ppCoord: ppCoord)
+                }
                 return
             }
 
@@ -553,32 +706,11 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
                 existingPointView.removeFromSuperview()
             }
             
-//            if let bundleURL = Bundle(for: OlympusSDK.OlympusMapView.self).url(forResource: "OlympusSDK", withExtension: "bundle"),
-//               let resourceBundle = Bundle(url: bundleURL),
-//               let markerImage = UIImage(named: "map_marker", in: resourceBundle, compatibleWith: nil) {
-//                let marker = markerImage
-//                let coordSize: CGFloat = 30
-//                let pointView = UIImageView(image: marker)
-//                pointView.frame = CGRect(x: rotatedX - coordSize / 2, y: rotatedY - coordSize / 2, width: coordSize, height: coordSize)
-//                pointView.tag = userCoordTag
-//
-//                pointView.layer.shadowColor = UIColor.black.cgColor
-//                pointView.layer.shadowOpacity = 0.25
-//                pointView.layer.shadowOffset = CGSize(width: 0, height: 2)
-//                pointView.layer.shadowRadius = 2
-//                
-//                let rotationAngle = CGFloat(-(heading - 90) * .pi / 180)
-//                pointView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-//                
-//                mapImageView.addSubview(pointView)
-//            }
-            
             let marker = self.imageMapMarker
             let coordSize: CGFloat = 30
             let pointView = UIImageView(image: marker)
             pointView.frame = CGRect(x: rotatedX - coordSize / 2, y: rotatedY - coordSize / 2, width: coordSize, height: coordSize)
             pointView.tag = userCoordTag
-
             pointView.layer.shadowColor = UIColor.black.cgColor
             pointView.layer.shadowOpacity = 0.25
             pointView.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -587,10 +719,56 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
             let rotationAngle = CGFloat(-(heading - 90) * .pi / 180)
             pointView.transform = CGAffineTransform(rotationAngle: rotationAngle)
             
-            mapImageView.addSubview(pointView)
+            UIView.animate(withDuration: 0.55, delay: 0, options: .curveEaseInOut, animations: {
+                self.mapImageView.addSubview(pointView)
+            }, completion: nil)
             
             self.preXyh = xyh
         }
+    }
+    
+    private func plotUnit(building: String, level: String, units: [Unit], ppCoord: [[Double]]) {
+        DispatchQueue.main.async { [self] in
+            mapImageView.subviews.forEach { $0.removeFromSuperview() }
+            let key = "\(OlympusMapManager.shared.sector_id)_\(building)_\(level)"
+            guard let scaleOffsetValues = mapScaleOffset[key], scaleOffsetValues.count == 6 else {
+                calMapScaleOffset(building: building, level: level, ppCoord: ppCoord)
+                return
+            }
+            
+            let scaleX = scaleOffsetValues[0]
+            let scaleY = scaleOffsetValues[1]
+            let offsetX = scaleOffsetValues[2]
+            let offsetY = scaleOffsetValues[3]
+            
+            let tempOffsetX = abs(mapImageView.bounds.width - (scaleX*mapImageView.bounds.width))
+            let offsetXByScale = scaleX < 1.0 ? (tempOffsetX/2) : -(tempOffsetX/2)
+
+            var scaledXY = [[Double]]()
+            for unit in units {
+                let x = unit.x
+                let y = unit.y
+                
+                let transformedX = ((x - offsetX)*scaleX) + offsetXByScale
+                let transformedY = ((y - offsetY)*scaleY)
+                
+                let rotatedX = transformedX
+                let rotatedY = scaleOffsetValues[5] - transformedY
+                scaledXY.append([transformedX, transformedY])
+                
+                let pointView = UIView(frame: CGRect(x: rotatedX - 2.5, y: rotatedY - 2.5, width: 20, height: 20))
+                pointView.alpha = 0.5
+                pointView.backgroundColor = .systemGreen
+                pointView.layer.cornerRadius = 2.5
+                mapImageView.addSubview(pointView)
+            }
+        }
+    }
+    
+    private func determineUnitProperty(unit: Unit) {
+        // Color
+        // Size
+        
     }
     
     // MARK: - Plot without Scale Up
@@ -717,7 +895,7 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
 //        }
 //    }
     
-    private func plotUserCoordWithZoomAndRotation(xyh: [Double], type: PlotType) {
+    private func plotUserCoordWithZoomAndRotation(building: String, level: String,xyh: [Double], type: PlotType) {
         DispatchQueue.main.async { [self] in
             if preXyh == xyh && type == .NORMAL {
                 return
@@ -725,6 +903,9 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
 
             let key = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding ?? "")_\(selectedLevel ?? "")"
             guard let scaleOffsetValues = mapScaleOffset[key], scaleOffsetValues.count == 6 else {
+                if let ppCoord = OlympusPathMatchingCalculator.shared.PpCoord[key] {
+                    calMapScaleOffset(building: building, level: level, ppCoord: ppCoord)
+                }
                 return
             }
 
@@ -761,10 +942,13 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
             pointView.layer.shadowOffset = CGSize(width: 0, height: 2)
             pointView.layer.shadowRadius = 2
             
-            mapImageView.addSubview(pointView)
+            UIView.animate(withDuration: 0.55, delay: 0, options: .curveEaseInOut, animations: {
+                self.mapImageView.addSubview(pointView)
+            }, completion: nil)
+            
 
             let rotationAngle = CGFloat((heading - 90) * .pi / 180)
-            let scaleFactor: CGFloat = 6.0
+            let scaleFactor: CGFloat = 4.0
             let mapCenterX = bounds.midX
             let mapCenterY = bounds.midY
             let pointViewCenterInSelf = scrollView.convert(pointView.center, to: self)
@@ -856,7 +1040,7 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
         if collectionView == buildingsCollectionView {
             let selectedBuildingName = buildingData[indexPath.row]
             self.selectedBuilding = selectedBuildingName
-
+            self.forceToMapInteractionMode()
             if let levels = OlympusMapManager.shared.getSectorBuildingLevel(sector_id: OlympusMapManager.shared.sector_id)[selectedBuildingName] {
                 self.levelData = levels
                 self.selectedLevel = self.levelData.first
@@ -869,42 +1053,83 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
             adjustCollectionViewHeights()
             updateMapImageView()
             updatePathPixel()
+            updateUnit()
         } else if collectionView == levelsCollectionView {
             let selectedLevelName = levelData[indexPath.row]
             self.selectedLevel = selectedLevelName
-            
+            self.forceToMapInteractionMode()
             levelsCollectionView.reloadData()
             updateMapImageView()
             updatePathPixel()
+            updateUnit()
         }
     }
     
     // MARK: - Building & Level Images
     private func observeImageUpdates() {
-        NotificationCenter.default.addObserver(self, selector: #selector(imageUpdated(_:)), name: .sectorImagesUpdated, object: nil)
+        NotificationCenter.default.addObserver(forName: .sectorImagesUpdated, object: nil, queue: .main) { [weak self] notification in
+            guard let userInfo = notification.userInfo, let imageKey = userInfo["imageKey"] as? String else { return }
+            self?.updateImageIfNecessary(imageKey: imageKey)
+        }
     }
 
-    @objc private func imageUpdated(_ notification: Notification) {
-        guard let userInfo = notification.userInfo, let imageKey = userInfo["imageKey"] as? String else { return }
-        if let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel {
-            let expectedImageKey = "image_\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
-            if imageKey == expectedImageKey {
-                updateMapImageView()
-            }
+    private func updateImageIfNecessary(imageKey: String) {
+        guard let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel else { return }
+        let expectedImageKey = "image_\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
+        if imageKey == expectedImageKey {
+            updateMapImageView()
+        }
+    }
+    
+    // MARK: - Building & Level Scales
+    private func observeScaleUpdates() {
+        NotificationCenter.default.addObserver(forName: .sectorScalesUpdated, object: nil, queue: .main) { [weak self] notification in
+            guard let userInfo = notification.userInfo, let scaleKey = userInfo["scaleKey"] as? String else { return }
+            self?.sectorScales[scaleKey] = OlympusMapManager.shared.sectorScales[scaleKey]
+        }
+    }
+    
+    private func scaleUpdated(_ notification: Notification) {
+        guard let userInfo = notification.userInfo, let scaleKey = userInfo["scaleKey"] as? String else { return }
+        self.sectorScales[scaleKey] = OlympusMapManager.shared.sectorScales[scaleKey]
+    }
+    
+    private func observeUnitUpdates() {
+        NotificationCenter.default.addObserver(forName: .sectorUnitsUpdated, object: nil, queue: .main) { [weak self] notification in
+            guard let userInfo = notification.userInfo, let unitKey = userInfo["unitKey"] as? String else { return }
+            print(getLocalTimeString() + " , (Olympus) MapView : observe \(unitKey)")
+            self?.sectorUnits[unitKey] = OlympusMapManager.shared.sectorUnits[unitKey]
+            self?.updateUnitIfNecessary(unitKey: unitKey)
+        }
+    }
+    
+    private func unitUpdated(_ notification: Notification) {
+        guard let userInfo = notification.userInfo, let unitKey = userInfo["unitKey"] as? String else { return }
+        self.sectorUnits[unitKey] = OlympusMapManager.shared.sectorUnits[unitKey]
+    }
+    
+    private func updateUnitIfNecessary(unitKey: String) {
+        guard let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel else { return }
+        let expectedUnitKey = "unit_\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
+        print(getLocalTimeString() + " , (Olympus) MapView : expectedUnitKey = \(expectedUnitKey) // unitKey = \(unitKey)")
+        if unitKey == expectedUnitKey {
+            updateUnit()
         }
     }
     
     // MARK: - Building & Level Path-Pixels
     private func observePathPixelUpdates() {
-        NotificationCenter.default.addObserver(self, selector: #selector(pathPixelUpdated(_:)), name: .sectorPathPixelUpdated, object: nil)
+        NotificationCenter.default.addObserver(forName: .sectorPathPixelUpdated, object: nil, queue: .main) { [weak self] notification in
+            guard let userInfo = notification.userInfo, let pathPixelKey = userInfo["pathPixelKey"] as? String else { return }
+            self?.updatePathPixelIfNecessary(pathPixelKey: pathPixelKey)
+        }
     }
-    @objc private func pathPixelUpdated(_ notification: Notification) {
-        guard let userInfo = notification.userInfo, let pathPixelKey = userInfo["pathPixelKey"] as? String else { return }
-        if let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel {
-            let expectedPpKey = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
-            if pathPixelKey == expectedPpKey {
-                updatePathPixel()
-            }
+
+    private func updatePathPixelIfNecessary(pathPixelKey: String) {
+        guard let selectedBuilding = selectedBuilding, let selectedLevel = selectedLevel else { return }
+        let expectedPpKey = "\(OlympusMapManager.shared.sector_id)_\(selectedBuilding)_\(selectedLevel)"
+        if pathPixelKey == expectedPpKey {
+            updatePathPixel()
         }
     }
     
@@ -923,50 +1148,136 @@ public class OlympusMapView: UIView, UICollectionViewDelegate, UICollectionViewD
     }
     
     public func updateResultInMap(result: FineLocationTrackingResult) {
-        if mode != .UPDATE_USER {
+        if mode == .MAP_ONLY {
             mode = .UPDATE_USER
             toggleZoomMode(to: .ZOOM_IN)
             DispatchQueue.main.async { [self] in
                 zoomButton.isHidden = false
                 myLocationButton.isHidden = false
             }
-        }
-        
-        let newBuilding = result.building_name
-        let newLevel = result.level_name
-        
-        let buildingChanged = selectedBuilding != newBuilding
-        let levelChanged = selectedLevel != newLevel
-        
-        DispatchQueue.main.async { [self] in
-            self.velocityLabel.text = String(Int(round(result.velocity)))
-            
-            if buildingChanged || levelChanged {
-                selectedBuilding = newBuilding
-                selectedLevel = newLevel
-                
-                buildingsCollectionView.reloadData()
-                levelsCollectionView.reloadData()
-                adjustCollectionViewHeights()
-                
-                updateMapImageView()
-                updatePathPixel()
-            }
-            
-            if zoomMode == .ZOOM_IN {
-                plotUserCoordWithZoomAndRotation(xyh: [result.x, result.y, result.absolute_heading], type: .NORMAL)
-            } else {
-                // 모드 전환 시기 확인
-                if (getCurrentTimeInMilliseconds() - modeChangedTime) > 3*1000 && modeChangedTime != 0 {
-                    toggleZoomMode()
-                    plotUserCoordWithZoomAndRotation(xyh: [result.x, result.y, result.absolute_heading], type: .FORCE)
-                } else {
-                    plotUserCoord(xyh: [result.x, result.y, result.absolute_heading])
+        } else if mode == .MAP_INTERACTION {
+            DispatchQueue.main.async { [self] in
+                if zoomButton.isHidden {
+                    zoomButton.isHidden = false
+                    myLocationButton.isHidden = false
                 }
             }
-//            self.plotUserCoord(xyh: [result.x, result.y, result.absolute_heading])
-//            self.plotUserCoordWithZoomAndRotation(xyh: [result.x, result.y, result.absolute_heading])
+            if (getCurrentTimeInMilliseconds() - mapModeChangedTime) > TIME_FOR_REST && mapModeChangedTime != 0 {
+                mode = .UPDATE_USER
+            }
         }
+        
+        if mode == .MAP_INTERACTION {
+            let newBuilding = result.building_name
+            let newLevel = result.level_name
+            
+            let buildingChanged = selectedBuilding != newBuilding
+            let levelChanged = selectedLevel != newLevel
+            
+            if !buildingChanged && !levelChanged {
+                plotUserCoord(building: newBuilding, level: newLevel, xyh: [result.x, result.y, result.absolute_heading])
+            }
+        } else if mode == .UPDATE_USER {
+            let newBuilding = result.building_name
+            let newLevel = result.level_name
+            
+            let buildingChanged = selectedBuilding != newBuilding
+            let levelChanged = selectedLevel != newLevel
+            
+            DispatchQueue.main.async { [self] in
+                let velocityString = String(Int(round(result.velocity)))
+                self.velocityLabel.text = velocityString
+                let attrString = NSAttributedString(
+                    string: velocityString,
+                    attributes: [
+                        NSAttributedString.Key.strokeColor: UIColor.white,
+                        NSAttributedString.Key.foregroundColor: UIColor.black,
+                        NSAttributedString.Key.strokeWidth: -3.0,
+                        NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 53.0)
+                    ]
+                )
+                self.velocityLabel.attributedText = attrString
+                
+                if buildingChanged || levelChanged {
+                    selectedBuilding = newBuilding
+                    selectedLevel = newLevel
+                    
+                    buildingsCollectionView.reloadData()
+                    levelsCollectionView.reloadData()
+                    adjustCollectionViewHeights()
+                    
+                    updateMapImageView()
+                    updatePathPixel()
+                    updateUnit()
+                }
+                
+                if zoomMode == .ZOOM_IN {
+                    plotUserCoordWithZoomAndRotation(building: selectedBuilding ?? "", level: selectedLevel ?? "", xyh: [result.x, result.y, result.absolute_heading], type: .NORMAL)
+                } else {
+                    // 모드 전환 시기 확인
+                    if (getCurrentTimeInMilliseconds() - zoomModeChangedTime) > TIME_FOR_REST && zoomModeChangedTime != 0 {
+                        toggleZoomMode()
+                        plotUserCoordWithZoomAndRotation(building: selectedBuilding ?? "", level: selectedLevel ?? "", xyh: [result.x, result.y, result.absolute_heading], type: .FORCE)
+                    } else {
+                        plotUserCoord(building: selectedBuilding ?? "", level: selectedLevel ?? "", xyh: [result.x, result.y, result.absolute_heading])
+                    }
+                }
+            }
+        }
+        
+//        if mode != .UPDATE_USER {
+//            mode = .UPDATE_USER
+//            toggleZoomMode(to: .ZOOM_IN)
+//            DispatchQueue.main.async { [self] in
+//                zoomButton.isHidden = false
+//                myLocationButton.isHidden = false
+//            }
+//        }
+        
+//        let newBuilding = result.building_name
+//        let newLevel = result.level_name
+//        
+//        let buildingChanged = selectedBuilding != newBuilding
+//        let levelChanged = selectedLevel != newLevel
+//        
+//        DispatchQueue.main.async { [self] in
+//            let velocityString = String(Int(round(result.velocity)))
+//            self.velocityLabel.text = velocityString
+//            let attrString = NSAttributedString(
+//                string: velocityString,
+//                attributes: [
+//                    NSAttributedString.Key.strokeColor: UIColor.white,
+//                    NSAttributedString.Key.foregroundColor: UIColor.black,
+//                    NSAttributedString.Key.strokeWidth: -3.0,
+//                    NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 53.0)
+//                ]
+//            )
+//            self.velocityLabel.attributedText = attrString
+//            
+//            if buildingChanged || levelChanged {
+//                selectedBuilding = newBuilding
+//                selectedLevel = newLevel
+//                
+//                buildingsCollectionView.reloadData()
+//                levelsCollectionView.reloadData()
+//                adjustCollectionViewHeights()
+//                
+//                updateMapImageView()
+//                updatePathPixel()
+//            }
+//            
+//            if zoomMode == .ZOOM_IN {
+//                plotUserCoordWithZoomAndRotation(xyh: [result.x, result.y, result.absolute_heading], type: .NORMAL)
+//            } else {
+//                // 모드 전환 시기 확인
+//                if (getCurrentTimeInMilliseconds() - zoomModeChangedTime) > TIME_FOR_REST && zoomModeChangedTime != 0 {
+//                    toggleZoomMode()
+//                    plotUserCoordWithZoomAndRotation(xyh: [result.x, result.y, result.absolute_heading], type: .FORCE)
+//                } else {
+//                    plotUserCoord(xyh: [result.x, result.y, result.absolute_heading])
+//                }
+//            }
+//        }
     }
     
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {

@@ -292,7 +292,7 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
     }
     
     private func showMapView(title: String) {
-        let mapView = MapView(title: title, sector_id: self.sector_id, region: self.region)
+        let mapView = MapView(title: title, region: self.region, sector_id: self.sector_id)
         mapView.onBackButtonTapped = { [weak self] in
             if let self = self {
                 self.removeCurrentSubview(mapView)

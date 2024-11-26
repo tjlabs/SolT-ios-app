@@ -12,7 +12,7 @@ class MapView: UIView {
     
     private lazy var mainView: UIView = {
         let view = UIView()
-        view.backgroundColor = .blue
+        view.backgroundColor = .clear
         return view
     }()
     
@@ -27,12 +27,14 @@ class MapView: UIView {
     var sector_id: Int = 0
     var region: String = ""
     
-    init(title: String, sector_id: Int, region: String) {
+    init(title: String, region: String, sector_id: Int) {
         self.titleText = title
         super.init(frame: .zero)
         setupLayout()
         bindActions()
-        setOlympusMapView()
+        self.sector_id = sector_id
+        self.region = region
+        setOlympusMapView(region: region, sector_id: sector_id)
     }
     
     required init?(coder: NSCoder) {
@@ -62,32 +64,14 @@ class MapView: UIView {
         addSubview(mainView)
         mainView.snp.makeConstraints { make in
             make.top.equalTo(topView.snp.bottom)
-            make.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(20)
+            make.leading.trailing.equalToSuperview().inset(10)
         }
     }
     
-//    private func setOlympusMapView() {
-//        mapView.configureFrame(to: mainView)
-//        mainView.addSubview(mapView)
-//        OlympusMapManager.shared.loadMap(region: "Korea", sector_id: sector_id, mapView: mapView)
-//    }
-    
-    private func setOlympusMapView() {
-        // Add `mapView` to `mainView`
+    private func setOlympusMapView(region: String, sector_id: Int) {
+        mapView.configureFrame(to: mainView)
         mainView.addSubview(mapView)
-        
-        // Use Auto Layout to set constraints
-        mapView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mapView.topAnchor.constraint(equalTo: mainView.topAnchor),
-            mapView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor),
-            mapView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
-            mapView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor)
-        ])
-        
-        // Load map data
-        OlympusMapManager.shared.loadMap(region: "Korea", sector_id: sector_id, mapView: mapView)
+        OlympusMapManager.shared.loadMap(region: region, sector_id: sector_id, mapView: mapView)
     }
-
 }

@@ -1,3 +1,4 @@
+import Foundation
 
 public class OlympusStateManager: NSObject {
     
@@ -53,6 +54,7 @@ public class OlympusStateManager: NSObject {
         }
     }
     
+    private var sector_id: Int = -1
     public var EntranceOuterWards = [String]()
     public var lastScannedEntranceOuterWardTime: Double = 0
     
@@ -86,7 +88,9 @@ public class OlympusStateManager: NSObject {
     private var foregroundObserver: Any!
     private var trajEditedObserver: Any!
     
-    
+    public func setSectorID(sector_id: Int) {
+        self.sector_id = sector_id
+    }
     
     public func setVariblesWhenBleIsNotEmpty() {
         self.timeBleOff = 0
@@ -202,7 +206,7 @@ public class OlympusStateManager: NSObject {
         if (levelName == "B0") {
             return true
         } else {
-            let key = "\(buildingName)_\(levelName)"
+            let key = "\(self.sector_id)_\(buildingName)_\(levelName)"
             guard let entranceArea: [[Double]] = OlympusPathMatchingCalculator.shared.EntranceArea[key] else {
                 return false
             }
@@ -371,14 +375,35 @@ public class OlympusStateManager: NSObject {
     }
     
     func notificationCenterAddObserver() {
-        startObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .serviceStarted, object: nil)
-        venusObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .didBecomeVenus, object: nil)
-        jupiterObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .didBecomeJupiter, object: nil)
-        rfdErrorObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .errorSendRfd, object: nil)
-        uvdErrorObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .errorSendUvd, object: nil)
-        trajEditedObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .trajEditedBecomeForground, object: nil)
+        startObserver = NotificationCenter.default.addObserver(forName: .serviceStarted, object: nil, queue: .main) { [weak self] _ in
+            self?.notifyObservers(state: START_FLAG)
+        }
+        
+        venusObserver = NotificationCenter.default.addObserver(forName: .didBecomeVenus, object: nil, queue: .main) { [weak self] _ in
+            guard let self = self else { return }
+            self.isVenusMode = true
+            self.notifyObservers(state: VENUS_FLAG)
+        }
+        
+        jupiterObserver = NotificationCenter.default.addObserver(forName: .didBecomeJupiter, object: nil, queue: .main) { [weak self] _ in
+            guard let self = self else { return }
+            self.isVenusMode = false
+            self.notifyObservers(state: JUPITER_FLAG)
+        }
+        
+        rfdErrorObserver = NotificationCenter.default.addObserver(forName: .errorSendRfd, object: nil, queue: .main) { [weak self] _ in
+            self?.notifyObservers(state: RFD_FLAG)
+        }
+        
+        uvdErrorObserver = NotificationCenter.default.addObserver(forName: .errorSendUvd, object: nil, queue: .main) { [weak self] _ in
+            self?.notifyObservers(state: UVD_FLAG)
+        }
+        
+        trajEditedObserver = NotificationCenter.default.addObserver(forName: .trajEditedBecomeForground, object: nil, queue: .main) { [weak self] _ in
+            self?.isBecomeForeground = false
+        }
     }
-    
+
     func notificationCenterRemoveObserver() {
         NotificationCenter.default.removeObserver(startObserver)
         NotificationCenter.default.removeObserver(venusObserver)
@@ -387,8 +412,9 @@ public class OlympusStateManager: NSObject {
         NotificationCenter.default.removeObserver(uvdErrorObserver)
         NotificationCenter.default.removeObserver(trajEditedObserver)
     }
+
     
-    @objc func onDidReceiveNotification(_ notification: Notification) {
+    func onDidReceiveNotification(_ notification: Notification) {
         if notification.name == .serviceStarted {
             notifyObservers(state: START_FLAG)
         }
