@@ -5,19 +5,35 @@ import RxSwift
 import RxCocoa
 import OlympusSDK
 
-class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDelegate {
+class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDelegate, Observer {
+    
+    func update(result: OlympusSDK.FineLocationTrackingResult) {
+        print(getLocalTimeString() + " , (MainVC : \(result)")
+    }
+    
+    func report(flag: Int) {
+        print(getLocalTimeString() + " , (MainVC) : report = \(flag)")
+    }
+    
     private var isDebugMode: Bool = true
+    private var isWelcomeReported: Bool = false
     
     @IBOutlet weak var webView: WKWebView!
     private var bottomButtons: [UIButton] = []
     
     private let disposeBag = DisposeBag()
     private let viewModel = WarpViewModel()
+    private var currentSubview: UIView?
     
     private lazy var bleManager = BLEManager()
+    private let serviceManager = OlympusServiceManager()
+    
     var bleTimer: DispatchSourceTimer?
     
+    // User Info
     let sector_id: Int = 2
+    let user_id: String = "solt_test"
+    let region: String = "Korea"
     
     let SOLUM_WEBPAGE = URL(string: "https://www.solumesl.com/en/solution/newtonpro?gad_source=1&gbraid=0AAAAACNvyjn4ta_VP-8mIIjTYbxU4aTgJ&gclid=Cj0KCQiA0fu5BhDQARIsAMXUBOIW6-wfzxDclixpW1J_KmA60NpSzJ-TJwOJej75BWfBGGTQOOKy2vIaAk50EALw_wcB")!
     let bottomTapViewHeight: CGFloat = 70
@@ -31,6 +47,8 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
     
     override func viewWillDisappear(_ animated: Bool) {
         navigationController?.isNavigationBarHidden = false
+        
+        serviceManager.removeObserver(self)
     }
     
     override func viewDidLoad() {
@@ -40,6 +58,11 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
         setBottomTapBar()
         bleManager.startScan(option: .Foreground)
         startTimer()
+        
+        serviceManager.addObserver(self)
+        serviceManager.startService(user_id: user_id, region: region, sector_id: sector_id, service: "FLT", mode: "pdr", completion: { [self] isSucess, message in
+            print(message)
+        })
     }
     
     private func setupWebView() {
@@ -192,9 +215,28 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
         view.addSubview(jupiterButtonView)
     }
     
+//    func jupiterButtonView(_ jupiterButtonView: JupiterButtonView, didSelectButtonWithLabel label: String) {
+//        moveToViewController(forLabel: label)
+//    }
+    
     func jupiterButtonView(_ jupiterButtonView: JupiterButtonView, didSelectButtonWithLabel label: String) {
-        moveToViewController(forLabel: label)
+        let title: String = label
+        switch label {
+        case "LIVE":
+            showLiveView(title: title)
+        case "PROFILE":
+            showMapView(title: title)
+        case "MAP":
+            showMapView(title: title)
+        case "CART":
+            showCartView(title: title)
+        case "MART":
+            showMartView(title: title)
+        default:
+            break
+        }
     }
+
     
     private func moveToViewController(forLabel label: String) {
         var destinationVC: UIViewController
@@ -240,6 +282,91 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
             pushViewControllerSmoothly(destinationVC)
         }
     }
+    
+    private func moveToSubview(_ subview: UIView) {
+        // Remove the current subview if one exists
+        if let existingSubview = currentSubview {
+            removeCurrentSubview(existingSubview)
+        }
+        
+        // Configure the new subview
+        subview.frame = view.bounds
+        subview.alpha = 0
+        subview.transform = CGAffineTransform(translationX: view.bounds.width, y: 0)
+        
+        // Add to view hierarchy
+        view.addSubview(subview)
+        currentSubview = subview
+        
+        // Animate the addition of the new subview
+        UIView.animate(withDuration: 0.3, animations: {
+            subview.alpha = 1
+            subview.transform = .identity
+        })
+    }
+    
+    private func removeCurrentSubview(_ subview: UIView) {
+        UIView.animate(withDuration: 0.3, animations: {
+            subview.alpha = 0
+            subview.transform = CGAffineTransform(translationX: self.view.bounds.width, y: 0)
+        }, completion: { _ in
+            subview.removeFromSuperview()
+            if self.currentSubview === subview {
+                self.currentSubview = nil
+            }
+        })
+    }
+    
+    private func showLiveView(title: String) {
+        let liveView = LiveView(title: title)
+        liveView.onBackButtonTapped = { [weak self] in
+            if let self = self {
+                self.removeCurrentSubview(liveView)
+            }
+        }
+        moveToSubview(liveView)
+    }
+    
+    private func showProfileView(title: String) {
+        let profileView = ProfileView(title: title)
+        profileView.onBackButtonTapped = { [weak self] in
+            if let self = self {
+                self.removeCurrentSubview(profileView)
+            }
+        }
+        moveToSubview(profileView)
+    }
+    
+    private func showMapView(title: String) {
+        let mapView = MapView(title: title)
+        mapView.onBackButtonTapped = { [weak self] in
+            if let self = self {
+                self.removeCurrentSubview(mapView)
+            }
+        }
+        moveToSubview(mapView)
+    }
+
+    private func showCartView(title: String) {
+        let cartView = CartView(title: title)
+        cartView.onBackButtonTapped = { [weak self] in
+            if let self = self {
+                self.removeCurrentSubview(cartView)
+            }
+        }
+        moveToSubview(cartView)
+    }
+    
+    private func showMartView(title: String) {
+        let martView = MartView(title: title)
+        martView.onBackButtonTapped = { [weak self] in
+            if let self = self {
+                self.removeCurrentSubview(martView)
+            }
+        }
+        moveToSubview(martView)
+    }
+
     
 //    private func pushViewControllerSmoothly(_ viewController: UIViewController) {
 //        guard let navigationController = navigationController else { return }
@@ -340,7 +467,16 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
     }
     
     @objc func bleTimerUpdate() {
-        let stronggestBLE = bleManager.getStronggestBLE()
+        if !isWelcomeReported {
+            let stronggestBLE = bleManager.getStronggestBLE()
+            if stronggestBLE.1 > -80 {
+                isWelcomeReported = true
+                bleManager.stopScan()
+            }
+        } else {
+            
+        }
+        
         //print(stronggestBLE)
     }
 }
