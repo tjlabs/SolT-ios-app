@@ -10,6 +10,7 @@ class ProfileView: UIView {
     }()
     
     private lazy var topView = TopView(title: titleText)
+    private lazy var profileUserInfoView = ProfileUserInfoView()
     private let disposeBag = DisposeBag()
     
     var titleText: String = "Default Title"
@@ -34,21 +35,25 @@ class ProfileView: UIView {
     }
     
     private func setupLayout() {
-        // Add the background view
         addSubview(backgroundView)
         
-        // Layout the background view to fill the entire MapView
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
-        // Add the topView on top of the backgroundView
+
         addSubview(topView)
-        
         topView.snp.makeConstraints { make in
             make.height.equalTo(60)
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(50)
         }
+        
+        addSubview(profileUserInfoView)
+        profileUserInfoView.snp.makeConstraints{ make in
+//            make.height.equalTo(120)
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.top.equalTo(topView.snp.bottom)
+        }
+        
     }
 }

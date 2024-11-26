@@ -67,15 +67,11 @@
 		};
 		B32E7E432CEF1B990092C2A2 /* SolTTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = SolTTests;
 			sourceTree = "<group>";
 		};
 		B32E7E4D2CEF1B990092C2A2 /* SolTUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = SolTUITests;
 			sourceTree = "<group>";
 		};

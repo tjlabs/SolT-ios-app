@@ -15,7 +15,6 @@ class JupiterButtonView: UIView {
     weak var delegate: JupiterButtonViewDelegate?
     
     let ANIMATION_DURATION = 0.2
-    let BUTTON_COLOR: String = "#06244B"
     let buttonTextLabels = [
         "LIVE",
         "PROFILE",
@@ -258,7 +257,7 @@ class JupiterButtonView: UIView {
 
     private func createButton() -> UIButton {
         let button = UIButton(type: .custom)
-        button.backgroundColor = UIColor(hex: BUTTON_COLOR)
+        button.backgroundColor = SOLT_COLOR
         button.layer.cornerRadius = buttonSize / 2
         button.frame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
         button.imageView?.contentMode = .scaleAspectFit

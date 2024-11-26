@@ -225,7 +225,7 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
         case "LIVE":
             showLiveView(title: title)
         case "PROFILE":
-            showMapView(title: title)
+            showProfileView(title: title)
         case "MAP":
             showMapView(title: title)
         case "CART":
