@@ -1,6 +1,6 @@
 import Foundation
 
-let SECTOR_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-07-31/sector"
+let SECTOR_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-07-31/content-rf"
 let CONTENT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-07-31/content"
 let ADVERTISEMENT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-07-31/ad"
 

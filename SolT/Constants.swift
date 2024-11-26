@@ -1,5 +1,7 @@
 import UIKit
 
+let DESELECT_COLOR: UIColor = .systemGray5
+
 let SOLT_COLOR_HEX: String = "#06244B"
 let SOLT_COLOR = UIColor(hex: SOLT_COLOR_HEX)
 

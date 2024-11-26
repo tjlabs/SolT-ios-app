@@ -11,6 +11,7 @@ class ProfileView: UIView {
     
     private lazy var topView = TopView(title: titleText)
     private lazy var profileUserInfoView = ProfileUserInfoView()
+    private lazy var profileBirthView = ProfileBirthView()
     private let disposeBag = DisposeBag()
     
     var titleText: String = "Default Title"
@@ -21,6 +22,7 @@ class ProfileView: UIView {
         super.init(frame: .zero)
         setupLayout()
         bindActions()
+        setupKeyboardDismissal()
     }
     
     required init?(coder: NSCoder) {
@@ -49,11 +51,25 @@ class ProfileView: UIView {
         }
         
         addSubview(profileUserInfoView)
-        profileUserInfoView.snp.makeConstraints{ make in
-//            make.height.equalTo(120)
+        profileUserInfoView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalTo(topView.snp.bottom)
         }
         
+        addSubview(profileBirthView)
+        profileBirthView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.top.equalTo(profileUserInfoView.snp.bottom).offset(10)
+        }
+    }
+    
+    private func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        backgroundView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        endEditing(true)
     }
 }
