@@ -93,7 +93,7 @@ class ProfileAllergyView: UIView, UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let totalSpacing = CGFloat(5 * 3) // 5 spacing between cells + 2 sides of padding
         let width = (collectionView.frame.width - totalSpacing) / 4 // 4 items per row
-        return CGSize(width: width, height: 45)
+        return CGSize(width: width, height: width*0.8)
     }
     
     // MARK: - Helper Methods

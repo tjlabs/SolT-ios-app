@@ -6,6 +6,7 @@ extension UIView {
         case top
         case left
         case right
+        case rightBottom
     }
     
      var className: String {
@@ -89,7 +90,7 @@ extension UIView {
         generator.impactOccurred()
     }
     
-    func addShadow(location: VerticalLocation, color: UIColor = .black, opacity: Float = 0.8, radius: CGFloat = 5.0) {
+    func addShadow(location: VerticalLocation, color: UIColor = .black, opacity: Float = 0.4, radius: CGFloat = 2.0) {
             switch location {
             case .bottom:
                  addShadow(offset: CGSize(width: 0, height: 10), color: color, opacity: opacity, radius: radius)
@@ -99,6 +100,8 @@ extension UIView {
                 addShadow(offset: CGSize(width: -10, height: 0), color: color, opacity: opacity, radius: radius)
             case .right:
                 addShadow(offset: CGSize(width: 10, height: 0), color: color, opacity: opacity, radius: radius)
+            case .rightBottom:
+                addShadow(offset: CGSize(width: 4, height: 4), color: color, opacity: opacity, radius: radius)
             }
         }
 

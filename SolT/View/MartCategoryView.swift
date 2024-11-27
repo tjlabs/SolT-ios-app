@@ -7,7 +7,7 @@ class MartCategoryView: UIView, UICollectionViewDataSource, UICollectionViewDele
     
     private lazy var titleLabel: UILabel = createLabel(with: "Category")
     private lazy var seeAllLabel: UILabel = createSmallLabel(with: "See all")
-    private let categoryNames: [String] = ["Food", "Beauty", "Clothes", "Toy"]
+    private let categoryNames: [String] = ["Snack", "Bath", "Car", "Alcohol"]
     
     private lazy var separatorView: UIView = {
         let view = UIView()

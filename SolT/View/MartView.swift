@@ -16,6 +16,12 @@ class MartView: UIView {
     private let martProductView = MartProductView()
     private let disposeBag = DisposeBag()
     
+    
+    private let cartImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFit
+        $0.image = UIImage(named: "icon_cart")
+    }
+    
     var titleText: String = "Default Title"
     var onBackButtonTapped: (() -> Void)?
     
@@ -53,6 +59,13 @@ class MartView: UIView {
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(50)
         }
+        addSubview(cartImageView)
+        cartImageView.snp.makeConstraints { make in
+            make.height.equalTo(30)
+            make.width.equalTo(30)
+            make.centerY.equalTo(topView)
+            make.trailing.equalToSuperview().inset(30)
+        }
         
         addSubview(martAdView)
         martAdView.snp.makeConstraints { make in
@@ -74,6 +87,6 @@ class MartView: UIView {
     }
     
     func updateProducts(_ outputProduct: OutputProduct) {
-        martProductView.updateProducts(with: outputProduct.product_list) // Pass products to MartProductView.
+        martProductView.updateProducts(with: outputProduct.product_list)
     }
 }

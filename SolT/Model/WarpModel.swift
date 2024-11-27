@@ -49,7 +49,7 @@ struct OutputAdvertisement: Codable {
 }
 
 // Products //
-struct Product: Codable {
+struct Product: Codable, Equatable, Hashable {
     var id: Int
     var company_name: String
     var name: String
