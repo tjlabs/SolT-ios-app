@@ -24,6 +24,11 @@ class ProfileView: UIView {
         setupLayout()
         bindActions()
         setupKeyboardDismissal()
+        setupSwipeGesture()
+    }
+    
+    deinit {
+        dismissKeyboard()
     }
     
     required init?(coder: NSCoder) {
@@ -78,5 +83,19 @@ class ProfileView: UIView {
     
     @objc private func dismissKeyboard() {
         endEditing(true)
+    }
+    
+    private func setupSwipeGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        addGestureRecognizer(panGesture)
+    }
+
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        if gesture.state == .ended {
+            if translation.x > SWIPE_THRESHOLD && abs(translation.y) < 50 {
+                onBackButtonTapped?()
+            }
+        }
     }
 }

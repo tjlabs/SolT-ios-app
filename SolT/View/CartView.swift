@@ -78,6 +78,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         setupLayout()
         bindActions()
         configureCartView()
+        setupSwipeGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -176,14 +177,43 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         let totalPrice = sortedCartProducts.reduce(0) { $0 + $1.price }
         totalPriceLabel.text = "$\(totalPrice)"
     }
-    
+
     @objc private func checkOutButtonTapped() {
         print("(CartView) Check-out Button tapped")
         
-        sortedCartProducts.removeAll()
-        MartProductView.cartProducts.removeAll()
-        collectionView.reloadData()
-        updateNoItemLabelAndCheckOutView()
+        let dialogView = DialogView()
+        dialogView.onConfirm = { [weak self] in
+            print("Confirmed checkout")
+
+            self?.sortedCartProducts.removeAll()
+            MartProductView.cartProducts.removeAll()
+            self?.collectionView.reloadData()
+            self?.updateNoItemLabelAndCheckOutView()
+        }
+        dialogView.onCancel = {
+            print("Checkout canceled")
+        }
+
+        if let parentView = self.superview {
+            parentView.addSubview(dialogView)
+            dialogView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
+    }
+
+    private func setupSwipeGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        addGestureRecognizer(panGesture)
+    }
+
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        if gesture.state == .ended {
+            if translation.x > SWIPE_THRESHOLD && abs(translation.y) < 50 {
+                onBackButtonTapped?()
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

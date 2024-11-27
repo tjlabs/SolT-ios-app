@@ -34,6 +34,7 @@ class MapView: UIView {
         bindActions()
         self.sector_id = sector_id
         self.region = region
+        setupSwipeGesture()
         setOlympusMapView(region: region, sector_id: sector_id)
     }
     
@@ -66,6 +67,20 @@ class MapView: UIView {
             make.top.equalTo(topView.snp.bottom)
             make.bottom.equalToSuperview().inset(20)
             make.leading.trailing.equalToSuperview().inset(10)
+        }
+    }
+    
+    private func setupSwipeGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        addGestureRecognizer(panGesture)
+    }
+
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        if gesture.state == .ended {
+            if translation.x > SWIPE_THRESHOLD && abs(translation.y) < 50 {
+                onBackButtonTapped?()
+            }
         }
     }
     

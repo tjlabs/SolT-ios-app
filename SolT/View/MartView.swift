@@ -25,7 +25,7 @@ class MartView: UIView {
     private let cartCountView: UIView = {
         let view = UIView()
         view.backgroundColor = SOLT_COLOR
-        view.layer.cornerRadius = 10
+        view.layer.cornerRadius = 12.5
         view.isHidden = true
         return view
     }()
@@ -47,6 +47,7 @@ class MartView: UIView {
         setupLayout()
         bindActions()
         observeCartProducts()
+        setupSwipeGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -136,5 +137,19 @@ class MartView: UIView {
     
     func updateProducts(_ outputProduct: OutputProduct) {
         martProductView.updateProducts(with: outputProduct.product_list)
+    }
+    
+    private func setupSwipeGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        addGestureRecognizer(panGesture)
+    }
+
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        if gesture.state == .ended {
+            if translation.x > SWIPE_THRESHOLD && abs(translation.y) < 50 {
+                onBackButtonTapped?()
+            }
+        }
     }
 }
