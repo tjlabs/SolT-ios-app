@@ -128,6 +128,13 @@ class CategoryCell: UICollectionViewCell {
         return view
     }()
     
+    private let categoryImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendardSemiBold(size: 14)
@@ -151,6 +158,10 @@ class CategoryCell: UICollectionViewCell {
             make.width.height.equalTo(60) // Circle size
             make.top.centerX.equalToSuperview()
         }
+        circleView.addSubview(categoryImageView)
+        categoryImageView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
         
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
@@ -161,5 +172,18 @@ class CategoryCell: UICollectionViewCell {
     
     func configure(with title: String) {
         titleLabel.text = title
+        switch(title){
+            // ["Snack", "Bath", "Car", "Alcohol"]
+        case "Snack":
+            categoryImageView.image = UIImage(named: "category_snack")
+        case "Bath":
+            categoryImageView.image = UIImage(named: "category_bath")
+        case "Car":
+            categoryImageView.image = UIImage(named: "category_car")
+        case "Alcohol":
+            categoryImageView.image = UIImage(named: "category_alcohol")
+        default:
+            break
+        }
     }
 }

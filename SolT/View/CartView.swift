@@ -165,10 +165,6 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         }
     }
     
-    private func setNoItemLabelHidden(flag: Bool) {
-        self.noItemLabel.isHidden = flag
-    }
-    
     private func updateNoItemLabelAndCheckOutView() {
         let isEmpty = sortedCartProducts.isEmpty
         noItemLabel.isHidden = !isEmpty
@@ -183,6 +179,11 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
     
     @objc private func checkOutButtonTapped() {
         print("(CartView) Check-out Button tapped")
+        
+        sortedCartProducts.removeAll()
+        MartProductView.cartProducts.removeAll()
+        collectionView.reloadData()
+        updateNoItemLabelAndCheckOutView()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

@@ -22,6 +22,22 @@ class MartView: UIView {
         $0.image = UIImage(named: "icon_cart")
     }
     
+    private let cartCountView: UIView = {
+        let view = UIView()
+        view.backgroundColor = SOLT_COLOR
+        view.layer.cornerRadius = 10
+        view.isHidden = true
+        return view
+    }()
+    
+    private let cartCountLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont.pretendardBold(size: 12)
+        label.textAlignment = .center
+        return label
+    }()
+    
     var titleText: String = "Default Title"
     var onBackButtonTapped: (() -> Void)?
     
@@ -30,6 +46,7 @@ class MartView: UIView {
         super.init(frame: .zero)
         setupLayout()
         bindActions()
+        observeCartProducts()
     }
     
     required init?(coder: NSCoder) {
@@ -44,27 +61,36 @@ class MartView: UIView {
     }
     
     private func setupLayout() {
-        // Add the background view
         addSubview(backgroundView)
-        
-        // Layout the background view to fill the entire MapView
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        // Add the topView on top of the backgroundView
         addSubview(topView)
         topView.snp.makeConstraints { make in
             make.height.equalTo(60)
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(50)
         }
+        
         addSubview(cartImageView)
         cartImageView.snp.makeConstraints { make in
             make.height.equalTo(30)
             make.width.equalTo(30)
             make.centerY.equalTo(topView)
             make.trailing.equalToSuperview().inset(30)
+        }
+        
+        addSubview(cartCountView)
+        cartCountView.snp.makeConstraints { make in
+            make.width.height.equalTo(25)
+            make.top.equalTo(cartImageView.snp.top).offset(-5)
+            make.trailing.equalTo(cartImageView.snp.trailing).offset(5)
+        }
+                
+        cartCountView.addSubview(cartCountLabel)
+        cartCountLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         addSubview(martAdView)
@@ -83,6 +109,28 @@ class MartView: UIView {
         martProductView.snp.makeConstraints { make in
             make.top.equalTo(martCategoryView.snp.bottom).offset(10)
             make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+    
+    private func observeCartProducts() {
+    Observable<Int>.create { observer in
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                observer.onNext(MartProductView.cartProducts.count)
+            }
+            return Disposables.create()
+        }
+        .subscribe(onNext: { [weak self] count in
+            self?.updateCartCount(count)
+        })
+        .disposed(by: disposeBag)
+    }
+        
+    private func updateCartCount(_ count: Int) {
+        if count > 0 {
+            cartCountLabel.text = "\(count)"
+            cartCountView.isHidden = false
+        } else {
+            cartCountView.isHidden = true
         }
     }
     
