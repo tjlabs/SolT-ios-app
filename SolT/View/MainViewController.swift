@@ -223,8 +223,8 @@ class MainViewController: UIViewController, WKUIDelegate, JupiterButtonViewDeleg
     func jupiterButtonView(_ jupiterButtonView: JupiterButtonView, didSelectButtonWithLabel label: String) {
         let title: String = label
         switch label {
-        case "LIVE":
-            showLiveView(title: title)
+//        case "LIVE":
+//            showLiveView(title: title)
         case "PROFILE":
             showProfileView(title: title)
         case "MAP":

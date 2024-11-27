@@ -131,9 +131,12 @@ class MartProductView: UIView {
     }
 
     @objc private func addToCartButtonTapped() {
-        // Pass the selected products to the static variable
         MartProductView.cartProducts = Set(selectedProducts)
         print("Products added to cart: \(MartProductView.cartProducts)")
+        
+        selectedProducts.removeAll()
+        collectionView.reloadData()
+        updateAddToCartView()
     }
 }
 
