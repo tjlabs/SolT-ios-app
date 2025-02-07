@@ -20,7 +20,7 @@ class WarpViewModel {
 
             if statusCode == 200, let data = result.data(using: .utf8) {
                 if let decodedResult = try? JSONDecoder().decode(OutputSector.self, from: data) {
-                    print("Sector Result : \(decodedResult)")
+//                    print("Sector Result : \(decodedResult)")
                     for item in decodedResult.content_rf_list {
                         sectorWarpDict[item.ward_id] = item.content_rss
                     }
@@ -43,7 +43,7 @@ class WarpViewModel {
 
             if statusCode == 200, let data = result.data(using: .utf8) {
                 if let decodedResult = try? JSONDecoder().decode(OutputContent.self, from: data) {
-                    print("Content Result : \(decodedResult)")
+//                    print("Content Result : \(decodedResult)")
                     self.contentData.accept(decodedResult)
                 } else {
                     print("Failed to fetch content data: \(result)")
@@ -63,7 +63,7 @@ class WarpViewModel {
 
             if statusCode == 200, let data = result.data(using: .utf8) {
                 if let decodedResult = try? JSONDecoder().decode(OutputAdvertisement.self, from: data) {
-                    print("Advertisement Result : \(decodedResult)")
+//                    print("Advertisement Result : \(decodedResult)")
                     self.advertisementData.accept(decodedResult)
                 } else {
                     print("Failed to fetch advertisement data: \(result)")
@@ -82,7 +82,7 @@ class WarpViewModel {
 
             if statusCode == 200, let data = result.data(using: .utf8) {
                 if let decodedResult = try? JSONDecoder().decode(OutputProduct.self, from: data) {
-                    print("Product Result : \(decodedResult)")
+//                    print("Product Result : \(decodedResult)")
                     self.productData.accept(decodedResult)
                 } else {
                     print("Failed to fetch product data: \(result)")
